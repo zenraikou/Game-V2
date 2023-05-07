@@ -1,0 +1,13 @@
+### Base URL
+@host = http://localhost:5000
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Quest Item",
+    "handle": "questitem",
+    "email": "questitem@game.com",
+    "password": "!Qi0"
+}
