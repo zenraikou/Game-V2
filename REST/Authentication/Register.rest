@@ -6,8 +6,9 @@ POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Quest Item",
     "handle": "questitem",
+    "name": "Quest Item",
+    "uniqueName": "questitem",
     "email": "questitem@game.com",
     "password": "!Qi0"
 }
