@@ -8,5 +8,5 @@ public class User
     public required string UniqueName { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
-    public DateTime CreationStamp     { get; private init; } = DateTime.UtcNow;
+    public DateTime CreationStamp { get; private init; } = DateTime.UtcNow;
 }
