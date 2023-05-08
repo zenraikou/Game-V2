@@ -30,7 +30,6 @@ public class AuthenticationService : IAuthenticationService
     {
         // Check if user(email) already exists
 
-        // Create user with UID
         var user = new User
         {
             Handle = handle,
@@ -40,7 +39,6 @@ public class AuthenticationService : IAuthenticationService
             PasswordHash = password
         };
 
-        // Generate token
         var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName);
         
         var result = new AuthenticationResult
