@@ -1,5 +1,6 @@
 using Game.Contracts.Authentication;
 using Game.Core.Services.Authentication;
+using Game.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -8,6 +9,8 @@ namespace Game.API.Controllers;
 [Route("api/auth")]
 public class AuthenticationController : ControllerBase
 {
+    public static List<User> users = new();
+    
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IAuthenticationService _authenticationService;
 
@@ -28,7 +31,7 @@ public class AuthenticationController : ControllerBase
             Name = result.Name,
             UniqueName = result.UniqueName,
             Email = result.Email,
-            Token = result.Token,
+            Token = result.Token
         };
 
         return Ok(response);
@@ -46,7 +49,7 @@ public class AuthenticationController : ControllerBase
             Name = result.Name,
             UniqueName = result.UniqueName,
             Email = result.Email,
-            Token = result.Token,
+            Token = result.Token
         };
 
         return Ok(response);
