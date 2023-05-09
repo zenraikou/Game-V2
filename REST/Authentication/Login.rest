@@ -6,6 +6,6 @@ POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "questitem@game.com",
+    "uniqueName": "questitem",
     "password": "!Qi0"
 }

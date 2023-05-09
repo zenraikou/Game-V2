@@ -9,10 +9,6 @@ namespace Game.API.Controllers;
 [Route("api/auth")]
 public class AuthenticationController : ControllerBase
 {
-    // User CRUD should be implemented at Core & Infrastructure projects.
-    // This is a temporary in-memory list of users.
-    public static List<User> users = new();
-    
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IAuthenticationService _authenticationService;
 
@@ -29,6 +25,7 @@ public class AuthenticationController : ControllerBase
 
         var response = new AuthenticationResponse
         {
+            Id = result.Id,
             Handle = result.Handle,
             Name = result.Name,
             UniqueName = result.UniqueName,
@@ -43,17 +40,6 @@ public class AuthenticationController : ControllerBase
     public ActionResult<AuthenticationResponse> Register(RegisterRequest request)
     {
         var result = _authenticationService.Register(request.Handle, request.Name, request.UniqueName, request.Email, request.Password);
-
-        var user = new User
-        {
-            Handle = result.Handle,
-            Name = result.Name,
-            UniqueName = result.UniqueName,
-            Email = result.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
-        };
-
-        users.Add(user);
 
         var response = new AuthenticationResponse
         {
