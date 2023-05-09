@@ -22,7 +22,7 @@ public class JWTGenerator : IJWTGenerator
     public string GenerateToken(Guid id, string name, string uniqueName, string email)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
         
         var claims = new[]
         {

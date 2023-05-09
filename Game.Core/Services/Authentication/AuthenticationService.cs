@@ -30,7 +30,7 @@ public class AuthenticationService : IAuthenticationService
     {
         // Check if user(email) already exists
 
-        // use BCrypt to hash password
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
         var user = new User
         {
@@ -38,7 +38,7 @@ public class AuthenticationService : IAuthenticationService
             Name = name,
             UniqueName = uniqueName,
             Email = email,
-            PasswordHash = password
+            PasswordHash = passwordHash
         };
 
         var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName, user.Email);
