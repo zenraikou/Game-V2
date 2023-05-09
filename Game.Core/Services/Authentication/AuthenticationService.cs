@@ -12,14 +12,14 @@ public class AuthenticationService : IAuthenticationService
         _jwtGenerator = jwtGenerator;
     }
 
-    public AuthenticationResult Login(string email, string password)
+    public AuthenticationResult Login(string uniqueName, string password)
     {
         var result = new AuthenticationResult
         {
             Handle = "handle",
             Name = "name",
-            UniqueName = "uniqueName",
-            Email = email,
+            UniqueName = uniqueName,
+            Email = "email",
             Token = "token"
         };
 
