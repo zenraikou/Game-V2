@@ -19,27 +19,29 @@ public class JWTGenerator : IJWTGenerator
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public string GenerateToken(Guid id, string name, string uniqueName)
+    public string GenerateToken(Guid id, string name, string uniqueName, string email)
     {
-        var signingCredentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
-            SecurityAlgorithms.HmacSha256);
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
             new Claim(JwtRegisteredClaimNames.Name, name),
             new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
+            new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var securityToken = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
-            expires: _dateTimeProvider.Now.AddDays(_jwtSettings.ExpiryDays),
+            expires: _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry),
             claims: claims,
             signingCredentials: signingCredentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(securityToken);
+        var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
+
+        return jwt;
     }
 }

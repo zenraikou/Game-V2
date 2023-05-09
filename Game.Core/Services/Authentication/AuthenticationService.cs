@@ -41,7 +41,7 @@ public class AuthenticationService : IAuthenticationService
             PasswordHash = password
         };
 
-        var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName);
+        var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName, user.Email);
         
         var result = new AuthenticationResult
         {
