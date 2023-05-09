@@ -21,9 +21,6 @@ public class JWTGenerator : IJWTGenerator
 
     public string GenerateToken(Guid id, string name, string uniqueName, string email)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
-        
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
@@ -33,12 +30,15 @@ public class JWTGenerator : IJWTGenerator
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+        var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
+
         var securityToken = new JwtSecurityToken(
+            claims: claims,
+            signingCredentials: signingCredentials,
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
-            expires: _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry),
-            claims: claims,
-            signingCredentials: signingCredentials);
+            expires: _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry));
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
