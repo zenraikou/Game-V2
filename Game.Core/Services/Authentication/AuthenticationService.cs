@@ -30,6 +30,8 @@ public class AuthenticationService : IAuthenticationService
     {
         // Check if user(email) already exists
 
+        // use BCrypt to hash password
+
         var user = new User
         {
             Handle = handle,
