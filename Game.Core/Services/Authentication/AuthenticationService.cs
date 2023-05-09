@@ -18,9 +18,9 @@ public class AuthenticationService : IAuthenticationService
     {
         var user = users.FirstOrDefault(u => u.UniqueName == uniqueName);
 
-        if (user is null) throw new Exception("Invlid Credentials.");
+        if (user is null) throw new Exception("Invalid Credentials.");
 
-        if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) is false) throw new Exception("Invlid Credentials.");
+        if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) is false) throw new Exception("Invalid Credentials.");
 
         var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName, user.Email);
 
