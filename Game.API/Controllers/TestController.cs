@@ -3,12 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("api/[controller]")]
 public class TestController : ControllerBase
 {
-    [HttpGet("greetings")]
+    [HttpGet("greetings"), Authorize(Roles = "Admin, User")]
     public ActionResult<string> Greetings()
     {
         var greetings = "Hello, World!";

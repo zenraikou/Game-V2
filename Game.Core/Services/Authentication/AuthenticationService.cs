@@ -38,8 +38,6 @@ public class AuthenticationService : IAuthenticationService
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        var role = new List<Role> { Role.User };
-
         user = new User
         {
             Handle = request.Handle,
@@ -47,7 +45,7 @@ public class AuthenticationService : IAuthenticationService
             UniqueName = request.UniqueName,
             Email = request.Email,
             PasswordHash = passwordHash,
-            Roles = role
+            Role = request.Role
         };
 
         users.Add(user);

@@ -8,6 +8,6 @@ public class User
     public required string UniqueName { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
-    public required List<Role> Roles { get; set; }
+    public required Role Role { get; set; }
     public DateTime CreationStamp { get; private init; } = DateTime.UtcNow;
 }
