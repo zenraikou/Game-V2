@@ -29,7 +29,7 @@ public class JWTGenerator : IJWTGenerator
             new Claim(JwtRegisteredClaimNames.UniqueName, user.UniqueName),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim("role", user.Role.ToString())
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));

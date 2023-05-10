@@ -1,5 +1,5 @@
 ### Base URL
-@host = http://localhost:5000
+@host = https://localhost:7000
 
 ### Login
 POST {{host}}/api/auth/login
@@ -20,7 +20,7 @@ Content-Type: application/json
     "uniqueName": "questitem",
     "email": "questitem@game.com",
     "password": "!Qi0",
-    "role": 1
+    "role": "Admin"
 }
 
 ### Greetings

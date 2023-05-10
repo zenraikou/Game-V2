@@ -37,6 +37,7 @@ public class AuthenticationService : IAuthenticationService
         if (user is not null) throw new Exception("User already exists.");
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        var role = (Role)Enum.Parse(typeof(Role), request.Role.Substring(0, 1).ToUpper() + request.Role.Substring(1).ToLower());
 
         user = new User
         {
@@ -45,7 +46,7 @@ public class AuthenticationService : IAuthenticationService
             UniqueName = request.UniqueName,
             Email = request.Email,
             PasswordHash = passwordHash,
-            Role = request.Role
+            Role = role
         };
 
         users.Add(user);
