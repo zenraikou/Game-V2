@@ -6,14 +6,16 @@ public static class DependencyInjection
     {
         services.AddControllers();
         services.AddRouting(options => options.LowercaseUrls = true);
+        services.AddAuthentication().AddJwtBearer();
         return services;
     }
 
     public static IApplicationBuilder UseAPI(this IApplicationBuilder app)
     {
         app.UseHttpsRedirection();
-        app.UseAuthorization();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
         return app;
     }

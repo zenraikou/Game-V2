@@ -1,3 +1,4 @@
+using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Domain.Entities;
 
@@ -14,60 +15,47 @@ public class AuthenticationService : IAuthenticationService
         _jwtGenerator = jwtGenerator;
     }
 
-    public AuthenticationResult Login(string uniqueName, string password)
+    public AuthenticationResponse Login(LoginRequest request)
     {
-        var user = users.FirstOrDefault(u => u.UniqueName == uniqueName);
+        var user = users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
 
         if (user is null) throw new Exception("Invalid Credentials.");
 
-        if (BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) is false) throw new Exception("Invalid Credentials.");
+        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Invalid Credentials.");
 
-        var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName, user.Email);
+        var token = _jwtGenerator.GenerateToken(user);
 
-        var result = new AuthenticationResult
-        {
-            Id = user.Id,
-            Handle = user.Handle,
-            Name = user.Name,
-            UniqueName = user.UniqueName,
-            Email = user.Email,
-            Token = token
-        };
+        var response = new AuthenticationResponse { Token = token };
 
-        return result;
+        return response;
     }
 
-    public AuthenticationResult Register(string handle, string name, string uniqueName, string email, string password)
+    public AuthenticationResponse Register(RegisterRequest request)
     {
-        var user = users.FirstOrDefault(u => u.UniqueName == uniqueName);
+        var user = users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
 
         if (user is not null) throw new Exception("User already exists.");
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        var role = new List<Role> { Role.User };
 
         user = new User
         {
-            Handle = handle,
-            Name = name,
-            UniqueName = uniqueName,
-            Email = email,
-            PasswordHash = passwordHash
+            Handle = request.Handle,
+            Name = request.Name,
+            UniqueName = request.UniqueName,
+            Email = request.Email,
+            PasswordHash = passwordHash,
+            Roles = role
         };
 
         users.Add(user);
 
-        var token = _jwtGenerator.GenerateToken(user.Id, user.Name, user.UniqueName, user.Email);
+        var token = _jwtGenerator.GenerateToken(user);
 
-        var result = new AuthenticationResult
-        {
-            Id = user.Id,
-            Handle = user.Handle,
-            Name = user.Name,
-            UniqueName = user.UniqueName,
-            Email = user.Email,
-            Token = token
-        };
+        var response = new AuthenticationResponse { Token = token };
 
-        return result;
+        return response;
     }
 }

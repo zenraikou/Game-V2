@@ -1,6 +1,5 @@
 using Game.Contracts.Authentication;
 using Game.Core.Services.Authentication;
-using Game.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -21,36 +20,14 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public ActionResult<AuthenticationResponse> Login(LoginRequest request)
     {
-        var result = _authenticationService.Login(request.UniqueName, request.Password);
-
-        var response = new AuthenticationResponse
-        {
-            Id = result.Id,
-            Handle = result.Handle,
-            Name = result.Name,
-            UniqueName = result.UniqueName,
-            Email = result.Email,
-            Token = result.Token
-        };
-
+        var response = _authenticationService.Login(request);
         return Ok(response);
     }
 
     [HttpPost("register")]
     public ActionResult<AuthenticationResponse> Register(RegisterRequest request)
     {
-        var result = _authenticationService.Register(request.Handle, request.Name, request.UniqueName, request.Email, request.Password);
-
-        var response = new AuthenticationResponse
-        {
-            Id = result.Id,
-            Handle = result.Handle,
-            Name = result.Name,
-            UniqueName = result.UniqueName,
-            Email = result.Email,
-            Token = result.Token
-        };
-
+        var response = _authenticationService.Register(request);
         return Ok(response);
     }
 }

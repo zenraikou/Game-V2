@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Services;
+using Game.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,16 +20,21 @@ public class JWTGenerator : IJWTGenerator
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public string GenerateToken(Guid id, string name, string uniqueName, string email)
+    public string GenerateToken(User user)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Name, name),
-            new Claim(JwtRegisteredClaimNames.UniqueName, uniqueName),
-            new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Name, user.Name),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.UniqueName),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
+
+        foreach (var role in user.Roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+        }
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
