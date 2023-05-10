@@ -1,9 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Services;
 using Game.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,7 +45,28 @@ public class JWTGenerator : IJWTGenerator
             expires: _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry));
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
-
         return jwt;
+    }
+
+    public RefreshToken GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshToken
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Expiry = _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry)
+        };
+
+        return refreshToken;
+    }
+
+    public void SetRefreshToken(RefreshToken refreshToken, HttpResponse response)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshToken.Expiry
+        };
+
+        response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
     }
 }

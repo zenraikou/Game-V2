@@ -9,5 +9,6 @@ public class User
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
     public required Role Role { get; set; }
+    // public required RefreshToken RefreshToken { get; set; }
     public DateTime CreationStamp { get; private init; } = DateTime.UtcNow;
 }
