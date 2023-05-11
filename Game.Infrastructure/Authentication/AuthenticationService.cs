@@ -1,13 +1,12 @@
 using Game.Contracts.Authentication;
+using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Domain.Entities;
 
-namespace Game.Core.Services.Authentication;
+namespace Game.Infrastructure.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
-    public static List<User> users = new();
-
     private readonly IJWTGenerator _jwtGenerator;
 
     public AuthenticationService(IJWTGenerator jwtGenerator)
@@ -17,22 +16,20 @@ public class AuthenticationService : IAuthenticationService
 
     public AuthenticationResponse Login(LoginRequest request)
     {
-        var user = users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
+        var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
 
         if (user is null) throw new Exception("Invalid Credentials.");
 
         if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Invalid Credentials.");
 
         var token = _jwtGenerator.GenerateToken(user);
-
         var response = new AuthenticationResponse { Token = token };
-
         return response;
     }
 
-    public AuthenticationResponse Register(RegisterRequest request)
+    public AuthenticationResponse Register(RegisterRequest request, RefreshToken refreshToken)
     {
-        var user = users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
+        var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
 
         if (user is not null) throw new Exception("User already exists.");
 
@@ -46,15 +43,16 @@ public class AuthenticationService : IAuthenticationService
             UniqueName = request.UniqueName,
             Email = request.Email,
             PasswordHash = passwordHash,
-            Role = role
+            Role = role,
+            RefreshToken = refreshToken.Token,
+            TokenExpiry = refreshToken.Expiry,
+            TokenCreationStamp = refreshToken.CreationStamp
         };
 
-        users.Add(user);
+        InMemory.Users.Add(user);
 
         var token = _jwtGenerator.GenerateToken(user);
-
         var response = new AuthenticationResponse { Token = token };
-
         return response;
     }
 }
