@@ -8,23 +8,31 @@ namespace Game.Infrastructure.Authentication;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IJWTGenerator _jwtGenerator;
+    private readonly ITokenRefresher _jwtRefreshser;
 
-    public AuthenticationService(IJWTGenerator jwtGenerator)
+    public AuthenticationService(IJWTGenerator jwtGenerator, ITokenRefresher jwtRefreshser)
     {
         _jwtGenerator = jwtGenerator;
+        _jwtRefreshser = jwtRefreshser;
     }
 
-    public AuthenticationResponse Login(LoginRequest request)
+    public AuthenticationResponse? Login(LoginRequest request)
     {
         var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
 
-        if (user is null) throw new Exception("Invalid Credentials.");
+        if (user is null) return null;
 
-        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Invalid Credentials.");
+        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) return null;
 
         var token = _jwtGenerator.GenerateToken(user);
+        var refreshToken = _jwtRefreshser.RefreshToken();
+
+        user.RefreshToken = refreshToken.Token;
+        user.TokenExpiry = refreshToken.Expiry;
+        user.TokenCreationStamp = refreshToken.CreationStamp;
+
         var response = new AuthenticationResponse { Token = token };
-        return response;
+        return (response);
     }
 
     public AuthenticationResponse Register(RegisterRequest request, RefreshToken refreshToken)

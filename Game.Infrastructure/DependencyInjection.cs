@@ -13,8 +13,11 @@ public static class DependencyInjection
     {
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<IJWTGenerator, JWTGenerator>();
+        services.AddSingleton<ITokenRefresher, TokenRefresher>();
         services.AddSingleton<IDateTImeProvider, DateTimeProvider>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddHttpContextAccessor();
         return services;
     }
 }
