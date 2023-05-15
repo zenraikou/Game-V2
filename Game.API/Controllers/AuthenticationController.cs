@@ -63,8 +63,8 @@ public class AuthenticationController : ControllerBase
     {
         var refreshToken = Request.Cookies["refreshToken"];
 
-        var uniqueName = _userService.GetCurrentUserUniqueName();
-        var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == "uniqueName");
+        var id = _userService.GetUserClaimsId();
+        var user = InMemory.Users.FirstOrDefault(u => u.Id == id);
 
         if (user is null)
         {
@@ -90,17 +90,9 @@ public class AuthenticationController : ControllerBase
 
     [Authorize]
     [HttpGet("claims")]
-    public ActionResult<List<string>> GetUserClaims()
+    public Guid? GetUserClaimsId()
     {
-        var result = _userService.GetCurrentUserUniqueName();
-
-        // var user = InMemory.Users.FirstOrDefault(u => u.Email == result);
-
-        // if (user is null)
-        // {
-        //     return BadRequest("Invalid user claims.");
-        // }
-
-        return Ok(result);
+        var result = _userService.GetUserClaimsId();
+        return result;
     }
 }
