@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Game.Core.Common.Interfaces.Authentication;
 using Microsoft.AspNetCore.Http;
 

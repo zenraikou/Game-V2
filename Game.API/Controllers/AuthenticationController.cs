@@ -1,7 +1,6 @@
 using Game.Contracts.Authentication;
 using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
-using Game.Core.Common.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
