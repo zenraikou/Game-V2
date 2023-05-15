@@ -14,17 +14,17 @@ namespace Game.Infrastructure.Authentication;
 
 public class TokenService : ITokenService
 {
-    private readonly IDateTImeProvider _dateTimeProvider;
     private readonly JWTSettings _jwtSettings;
+    private readonly IDateTImeProvider _dateTimeProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public TokenService(
-        IDateTImeProvider dateTimeProvider,
         IOptions<JWTSettings> jwtSettings, 
+        IDateTImeProvider dateTimeProvider,
         IHttpContextAccessor httpContextAccessor)
     {
-        _dateTimeProvider = dateTimeProvider;
         _jwtSettings = jwtSettings.Value;
+        _dateTimeProvider = dateTimeProvider;
         _httpContextAccessor = httpContextAccessor;
     }
 

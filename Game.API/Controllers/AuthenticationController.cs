@@ -11,20 +11,20 @@ namespace Game.API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
-    private readonly IAuthenticationService _authenticationService;
-    private readonly IUserService _userService;
     private readonly ITokenService _tokenService;
+    private readonly IUserService _userService;
+    private readonly IAuthenticationService _authenticationService;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
-        IAuthenticationService authenticationService,
+        ITokenService tokenService,
         IUserService userService,
-        ITokenService tokenService)
+        IAuthenticationService authenticationService)
     {
         _logger = logger;
-        _authenticationService = authenticationService;
-        _userService = userService;
         _tokenService = tokenService;
+        _userService = userService;
+        _authenticationService = authenticationService;
     }
 
     [HttpPost("login")]
