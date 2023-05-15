@@ -24,7 +24,7 @@ public class TokenService : ITokenService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string GenerateJWT(User user)
+    public string GenerateAccessToken(User user)
     {
         var claims = new List<Claim>
         {

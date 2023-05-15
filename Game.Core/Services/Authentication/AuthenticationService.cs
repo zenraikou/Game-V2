@@ -25,16 +25,16 @@ public class AuthenticationService : IAuthenticationService
         if (user is null) throw new Exception("Bad Request: Invalid credentials.");
 
         // replace exception with global error handler later
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) throw new Exception("Bad Request: Invalid credentials.");
+        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Bad Request: Invalid credentials.");
 
-        var token = _tokenService.GenerateJWT(user);
+        var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken.Token;
         user.TokenExpiry = refreshToken.Expiry;
         user.TokenCreationStamp = refreshToken.CreationStamp;
 
-        var response = new AuthenticationResponse { Token = token };
+        var response = new AuthenticationResponse { Token = accessToken };
         return (response);
     }
 
@@ -63,8 +63,8 @@ public class AuthenticationService : IAuthenticationService
 
         await _userRepository.Post(user);
 
-        var token = _tokenService.GenerateJWT(user);
-        var response = new AuthenticationResponse { Token = token };
+        var accessToken = _tokenService.GenerateAccessToken(user);
+        var response = new AuthenticationResponse { Token = accessToken };
         return response;
     }
 }

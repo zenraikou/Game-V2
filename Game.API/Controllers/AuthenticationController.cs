@@ -53,7 +53,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("refresh-token"), Authorize]
     public async Task<ActionResult<string>> RefreshToken()
     {
-        var refreshToken = Request.Cookies["refreshToken"];
+        var cookieRefreshToken = Request.Cookies["refreshToken"];
 
         var id = _userService.GetUserClaimsId();
         var user = await _userRepository.Get(u => u.Id == id);
@@ -63,7 +63,7 @@ public class AuthenticationController : ControllerBase
             return NotFound("User does not exist.");
         }
 
-        if (user.RefreshToken.Equals(refreshToken) is false)
+        if (user.RefreshToken.Equals(cookieRefreshToken) is false)
         {
             Console.WriteLine("Refresh token is invalid."); // temporary
             return Unauthorized("Refresh token is invalid.");
@@ -74,10 +74,14 @@ public class AuthenticationController : ControllerBase
             return Unauthorized("Refresh token is invalid");
         }
 
-        var token = _tokenService.GenerateJWT(user);
-        _tokenService.GenerateRefreshToken();
+        var accessToken = _tokenService.GenerateAccessToken(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
 
-        return Ok(token);
+        user.RefreshToken = refreshToken.Token;
+        user.TokenExpiry = refreshToken.Expiry;
+        user.TokenCreationStamp = refreshToken.CreationStamp;
+
+        return Ok(accessToken);
     }
 
     [HttpGet("claims"), Authorize]

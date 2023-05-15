@@ -4,6 +4,6 @@ namespace Game.Core.Common.Interfaces.Authentication;
 
 public interface ITokenService
 {
-    string GenerateJWT(User user);
+    string GenerateAccessToken(User user);
     RefreshToken GenerateRefreshToken();
 }
