@@ -4,27 +4,27 @@ using System.Security.Cryptography;
 using System.Text;
 using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
-using Game.Core.Common.Interfaces.Services;
+using Game.Core.Common.Interfaces.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.Services.Authentication;
 
 public class TokenService : ITokenService
 {
-    private readonly JWTSettings _jwtSettings;
-    private readonly IDateTImeProvider _dateTimeProvider;
+    private readonly IJWTSettings _jwtSettings;
+    private readonly ITime _time;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public TokenService(
-        IOptions<JWTSettings> jwtSettings, 
-        IDateTImeProvider dateTimeProvider,
+        ITime time,
+        IOptions<IJWTSettings> jwtSettings, 
         IHttpContextAccessor httpContextAccessor)
     {
+        _time = time;
         _jwtSettings = jwtSettings.Value;
-        _dateTimeProvider = dateTimeProvider;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -49,7 +49,7 @@ public class TokenService : ITokenService
             signingCredentials: signingCredentials,
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
-            expires: _dateTimeProvider.Now.AddHours(_jwtSettings.Expiry));
+            expires: _time.Now.AddHours(_jwtSettings.Expiry));
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
         return jwt;
@@ -60,7 +60,7 @@ public class TokenService : ITokenService
         var refreshToken = new RefreshToken
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expiry = _dateTimeProvider.Now.AddDays(7)
+            Expiry = _time.Now.AddDays(7)
         };
 
         var cookieOptions = new CookieOptions

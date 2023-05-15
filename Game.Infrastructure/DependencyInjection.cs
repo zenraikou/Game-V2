@@ -1,6 +1,9 @@
 using Game.Core.Common.Interfaces.Authentication;
-using Game.Core.Common.Interfaces.Services;
+using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Common.Interfaces.Time;
+using Game.Core.Services.Authentication;
 using Game.Infrastructure.Authentication;
+using Game.Infrastructure.Persistence;
 using Game.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,11 +15,15 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
+        services.AddSingleton<IJWTSettings, JWTSettings>();
+        services.AddSingleton<ITime, Time>();
         services.AddSingleton<ITokenService, TokenService>();
-        services.AddSingleton<IDateTImeProvider, DateTimeProvider>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddHttpContextAccessor();
+
+        services.AddScoped<IUserRepository, MockUserRepository>();
+
         return services;
     }
 }

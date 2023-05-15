@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Game.Core.Common.Interfaces.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.Services.Authentication;
 
 public class UserService : IUserService
 {
