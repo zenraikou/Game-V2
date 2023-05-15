@@ -14,24 +14,18 @@ public class AuthenticationController : ControllerBase
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    private readonly IDateTImeProvider _dateTimeProvider;
-    private readonly IJWTGenerator _jwtGenerator;
-    private readonly ITokenRefresher _jwtRefresher;
+    private readonly IJWTManager _jwtManager;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
         IAuthenticationService authenticationService,
         IUserService userService,
-        IDateTImeProvider dateTimeProvider,
-        IJWTGenerator jwtGenerator,
-        ITokenRefresher jwtRefresher)
+        IJWTManager jwtManager)
     {
         _logger = logger;
         _authenticationService = authenticationService;
         _userService = userService;
-        _dateTimeProvider = dateTimeProvider;
-        _jwtGenerator = jwtGenerator;
-        _jwtRefresher = jwtRefresher;
+        _jwtManager = jwtManager;
     }
 
     [HttpPost("login")]
@@ -44,16 +38,13 @@ public class AuthenticationController : ControllerBase
             return BadRequest("Invalid Credentials.");
         }
 
-        // var refreshToken = GenerateRefreshToken();
-        // SetRefreshToken(refreshToken, response.Value.Item2);
-
         return Ok(response);
     }
 
     [HttpPost("register")]
     public ActionResult<AuthenticationResponse> Register(RegisterRequest request)
     {
-        var refreshToken = _jwtRefresher.RefreshToken();
+        var refreshToken = _jwtManager.GenerateRefreshToken();
         var response = _authenticationService.Register(request, refreshToken);
         return Ok(response);
     }
@@ -82,8 +73,8 @@ public class AuthenticationController : ControllerBase
             return Unauthorized("Refresh token is invalid");
         }
 
-        var token = _jwtGenerator.GenerateToken(user);
-        _jwtRefresher.RefreshToken();
+        var token = _jwtManager.GenerateToken(user);
+        _jwtManager.GenerateRefreshToken();
 
         return Ok(token);
     }

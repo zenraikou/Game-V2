@@ -1,23 +1,31 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Services;
 using Game.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Game.Infrastructure.Authentication;
 
-public class JWTGenerator : IJWTGenerator
+public class JWTManager : IJWTManager
 {
-    private readonly JWTSettings _jwtSettings;
     private readonly IDateTImeProvider _dateTimeProvider;
+    private readonly JWTSettings _jwtSettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public JWTGenerator(IOptions<JWTSettings> jwtSettings, IDateTImeProvider dateTimeProvider)
+    public JWTManager(
+        IDateTImeProvider dateTimeProvider,
+        IOptions<JWTSettings> jwtSettings, 
+        IHttpContextAccessor httpContextAccessor)
     {
-        _jwtSettings = jwtSettings.Value;
         _dateTimeProvider = dateTimeProvider;
+        _jwtSettings = jwtSettings.Value;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public string GenerateToken(User user)
@@ -45,5 +53,35 @@ public class JWTGenerator : IJWTGenerator
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
         return jwt;
+    }
+
+    public RefreshToken GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshToken
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Expiry = _dateTimeProvider.Now.AddDays(7)
+        };
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshToken.Expiry
+        };
+
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+
+        return refreshToken;
+    }
+
+    public void SetRefreshToken(Guid id, RefreshToken refreshToken)
+    {
+        var user = InMemory.Users.FirstOrDefault(u => u.Id == id);
+
+        if (user is null)  throw new Exception("User is null.");
+
+        user.RefreshToken = refreshToken.Token;
+        user.TokenExpiry = refreshToken.Expiry;
+        user.TokenCreationStamp = refreshToken.CreationStamp;
     }
 }
