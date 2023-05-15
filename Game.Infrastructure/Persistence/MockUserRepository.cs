@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Domain.Entities;
 
@@ -7,28 +8,42 @@ public class MockUserRepository : IUserRepository
 {
     public static List<User> users = new();
 
-    public Task<List<User>> GetAll()
+    public async Task<IEnumerable<User>> GetAll(Expression<Func<User, bool>> expression)
     {
-        throw new NotImplementedException();
+        var query = users.AsQueryable().Where(expression);
+        return await Task.FromResult(users.AsEnumerable());
     }
 
-    public Task<User> Get(Guid id)
+    public async Task<User?> Get(Func<User, bool> expression)
     {
-        throw new NotImplementedException();
+        return await Task.FromResult(users.FirstOrDefault(expression));
     }
 
-    public Task Post(User user)
+    public async Task Post(User user)
     {
-        throw new NotImplementedException();
+        users.Add(user);
+        await Task.CompletedTask;
     }
 
     public void Update(User user)
     {
-        throw new NotImplementedException();
+        var entity = users.FirstOrDefault(u => u.Id == user.Id);
+
+        if (entity is not null)
+        {
+            entity.Handle = user.Handle;
+            entity.Name = user.Name;
+            entity.UniqueName = user.UniqueName;
+            entity.Email = user.Email;
+            entity.PasswordHash = user.PasswordHash;
+            entity.Role = user.Role;
+        }
     }
 
     public void Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var user = users.FirstOrDefault(u => u.Id == id);
+        if (user is null) throw new Exception("Failed to delete user.");
+        users.Remove(user);
     }
 }

@@ -5,6 +5,6 @@ namespace Game.Core.Common.Interfaces.Authentication;
 
 public interface IAuthenticationService
 {
-    AuthenticationResponse? Login(LoginRequest request);
-    AuthenticationResponse Register(RegisterRequest request, RefreshToken refreshToken);
+    Task<AuthenticationResponse?> Login(LoginRequest request);
+    Task<AuthenticationResponse?> Register(RegisterRequest request, RefreshToken refreshToken);
 }

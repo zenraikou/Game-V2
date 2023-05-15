@@ -2,30 +2,33 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
+using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Common.Interfaces.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Game.Core.Services.Authentication;
+namespace Game.Infrastructure.Authentication;
 
 public class TokenService : ITokenService
 {
-    private readonly IJWTSettings _jwtSettings;
+    private readonly JWTSettings _jwtSettings;
     private readonly ITime _time;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserRepository _userRepository;
 
     public TokenService(
         ITime time,
-        IOptions<IJWTSettings> jwtSettings, 
-        IHttpContextAccessor httpContextAccessor)
+        IOptions<JWTSettings> jwtSettings,
+        IHttpContextAccessor httpContextAccessor,
+        IUserRepository userRepository)
     {
         _time = time;
         _jwtSettings = jwtSettings.Value;
         _httpContextAccessor = httpContextAccessor;
+        _userRepository = userRepository;
     }
 
     public string GenerateJWT(User user)
@@ -74,9 +77,9 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
-    public void RefreshToken(Guid id, RefreshToken refreshToken)
+    public async Task RefreshToken(Guid id, RefreshToken refreshToken)
     {
-        var user = InMemory.Users.FirstOrDefault(u => u.Id == id);
+        var user = await _userRepository.Get(u => u.Id == id);
 
         if (user is null)  throw new Exception("User is null.");
 

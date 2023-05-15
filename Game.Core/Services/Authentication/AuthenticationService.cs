@@ -1,22 +1,24 @@
 using Game.Contracts.Authentication;
-using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
+using Game.Core.Common.Interfaces.Persistence;
 using Game.Domain.Entities;
 
 namespace Game.Infrastructure.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
+    private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
 
-    public AuthenticationService(ITokenService tokenService)
+    public AuthenticationService(IUserRepository userRepository, ITokenService tokenService)
     {
+        _userRepository = userRepository;
         _tokenService = tokenService;
     }
 
-    public AuthenticationResponse? Login(LoginRequest request)
+    public async Task<AuthenticationResponse?> Login(LoginRequest request)
     {
-        var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
+        var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
 
         if (user is null) return null;
 
@@ -24,15 +26,15 @@ public class AuthenticationService : IAuthenticationService
 
         var token = _tokenService.GenerateJWT(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
-        _tokenService.RefreshToken(user.Id, refreshToken);
+        await _tokenService.RefreshToken(user.Id, refreshToken);
 
         var response = new AuthenticationResponse { Token = token };
         return (response);
     }
 
-    public AuthenticationResponse Register(RegisterRequest request, RefreshToken refreshToken)
+    public async Task<AuthenticationResponse?> Register(RegisterRequest request, RefreshToken refreshToken)
     {
-        var user = InMemory.Users.FirstOrDefault(u => u.UniqueName == request.UniqueName);
+        var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
 
         if (user is not null) throw new Exception("User already exists.");
 
@@ -52,10 +54,9 @@ public class AuthenticationService : IAuthenticationService
             TokenCreationStamp = refreshToken.CreationStamp
         };
 
-        InMemory.Users.Add(user);
+        await _userRepository.Post(user);
 
-        var token = _tokenService.GenerateJWT(user);
-        var response = new AuthenticationResponse { Token = token };
+        var response = await Login(new LoginRequest { UniqueName = request.UniqueName, Password = request.Password });
         return response;
     }
 }

@@ -1,6 +1,6 @@
 using Game.Contracts.Authentication;
-using Game.Core.Common;
 using Game.Core.Common.Interfaces.Authentication;
+using Game.Core.Common.Interfaces.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,23 +14,29 @@ public class AuthenticationController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IUserRepository _userRepository;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
         ITokenService tokenService,
         IUserService userService,
-        IAuthenticationService authenticationService)
+        IAuthenticationService authenticationService,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userService = userService;
         _authenticationService = authenticationService;
+        _userRepository = userRepository;
     }
 
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("login")]
-    public ActionResult<AuthenticationResponse> Login(LoginRequest request)
+    public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
     {
-        var response = _authenticationService.Login(request);
+        var response = await _authenticationService.Login(request);
 
         if (response is null)
         {
@@ -40,21 +46,23 @@ public class AuthenticationController : ControllerBase
         return Ok(response);
     }
 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     [HttpPost("register")]
-    public ActionResult<AuthenticationResponse> Register(RegisterRequest request)
+    public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
     {
         var refreshToken = _tokenService.GenerateRefreshToken();
-        var response = _authenticationService.Register(request, refreshToken);
+        var response = await _authenticationService.Register(request, refreshToken);
         return Ok(response);
     }
 
     [HttpPost("refresh-token")]
-    public ActionResult<string> RefreshToken()
+    public async Task<ActionResult<string>> RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
 
         var id = _userService.GetUserClaimsId();
-        var user = InMemory.Users.FirstOrDefault(u => u.Id == id);
+        var user = await _userRepository.Get(u => u.Id == id);
 
         if (user is null)
         {
