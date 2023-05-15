@@ -1,6 +1,7 @@
 using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Services.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,26 +38,19 @@ public class AuthenticationController : ControllerBase
     public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
     {
         var response = await _authenticationService.Login(request);
-
-        if (response is null)
-        {
-            return BadRequest("Invalid Credentials.");
-        }
-
         return Ok(response);
     }
 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status302Found)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
     {
-        var refreshToken = _tokenService.GenerateRefreshToken();
-        var response = await _authenticationService.Register(request, refreshToken);
+        var response = await _authenticationService.Register(request);
         return Ok(response);
     }
 
-    [HttpPost("refresh-token")]
+    [HttpPost("refresh-token"), Authorize]
     public async Task<ActionResult<string>> RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
@@ -86,8 +80,7 @@ public class AuthenticationController : ControllerBase
         return Ok(token);
     }
 
-    [Authorize]
-    [HttpGet("claims")]
+    [HttpGet("claims"), Authorize]
     public Guid? GetUserClaimsId()
     {
         var result = _userService.GetUserClaimsId();

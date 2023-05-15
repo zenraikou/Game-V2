@@ -8,15 +8,24 @@ public class MockUserRepository : IUserRepository
 {
     public static List<User> users = new();
 
-    public async Task<IEnumerable<User>> GetAll(Expression<Func<User, bool>> expression)
+    public async Task<IEnumerable<User>> GetAll(Expression<Func<User, bool>>? expression)
     {
-        var query = users.AsQueryable().Where(expression);
-        return await Task.FromResult(users.AsEnumerable());
+        // change static users to DbSet<User> when using EF Core
+        IQueryable<User> query = users.AsQueryable();
+
+        if (expression is not null)
+        {
+            query = query.Where(expression);
+        }
+
+        return await Task.FromResult(query/*.AsNoTracking()*/.AsEnumerable());
     }
 
-    public async Task<User?> Get(Func<User, bool> expression)
+    public async Task<User?> Get(Expression<Func<User, bool>> expression)
     {
-        return await Task.FromResult(users.FirstOrDefault(expression));
+        // change static users to DbSet<User> when using EF Core
+        IQueryable<User> query = users.AsQueryable();
+        return await Task.FromResult(query/*.AsNoTracking()*/.FirstOrDefault(expression));
     }
 
     public async Task Post(User user)
@@ -40,10 +49,8 @@ public class MockUserRepository : IUserRepository
         }
     }
 
-    public void Delete(Guid id)
+    public void Delete(User user)
     {
-        var user = users.FirstOrDefault(u => u.Id == id);
-        if (user is null) throw new Exception("Failed to delete user.");
         users.Remove(user);
     }
 }

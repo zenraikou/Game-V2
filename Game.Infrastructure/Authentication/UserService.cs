@@ -16,14 +16,9 @@ public class UserService : IUserService
     public Guid? GetUserClaimsId()
     {
         // Get the token from the Authorization header
-        var authHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
-        var split = authHeader?.Split(' ');
-
-        var token = split?[1];
-        var tokenHandler = new JwtSecurityTokenHandler(); // Create a JwtSecurityTokenHandler to read the token
-        var jwt = tokenHandler.ReadJwtToken(token); // Read the token and extract the custom claim
-
-        var id = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token); // Read the token
+        var id = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value; // Extract the custom claim
         return id is null ? null : Guid.Parse(id);
     }
 }

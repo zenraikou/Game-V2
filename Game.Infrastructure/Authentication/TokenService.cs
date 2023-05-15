@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Game.Core.Common.Interfaces.Authentication;
-using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Common.Interfaces.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -17,18 +16,12 @@ public class TokenService : ITokenService
     private readonly JWTSettings _jwtSettings;
     private readonly ITime _time;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IUserRepository _userRepository;
 
-    public TokenService(
-        ITime time,
-        IOptions<JWTSettings> jwtSettings,
-        IHttpContextAccessor httpContextAccessor,
-        IUserRepository userRepository)
+    public TokenService(IOptions<JWTSettings> jwtSettings, ITime time, IHttpContextAccessor httpContextAccessor)
     {
-        _time = time;
         _jwtSettings = jwtSettings.Value;
+        _time = time;
         _httpContextAccessor = httpContextAccessor;
-        _userRepository = userRepository;
     }
 
     public string GenerateJWT(User user)
@@ -73,18 +66,6 @@ public class TokenService : ITokenService
         };
 
         _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
-
         return refreshToken;
-    }
-
-    public async Task RefreshToken(Guid id, RefreshToken refreshToken)
-    {
-        var user = await _userRepository.Get(u => u.Id == id);
-
-        if (user is null)  throw new Exception("User is null.");
-
-        user.RefreshToken = refreshToken.Token;
-        user.TokenExpiry = refreshToken.Expiry;
-        user.TokenCreationStamp = refreshToken.CreationStamp;
     }
 }

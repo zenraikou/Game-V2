@@ -6,5 +6,4 @@ public interface ITokenService
 {
     string GenerateJWT(User user);
     RefreshToken GenerateRefreshToken();
-    Task RefreshToken(Guid id, RefreshToken refreshToken);
 }

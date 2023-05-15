@@ -1,6 +1,7 @@
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Common.Interfaces.Time;
+using Game.Core.Services.Authentication;
 using Game.Infrastructure.Authentication;
 using Game.Infrastructure.Persistence;
 using Game.Infrastructure.Services;
@@ -15,13 +16,11 @@ public static class DependencyInjection
     {
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddHttpContextAccessor();
-
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserRepository, MockUserRepository>();
-
         return services;
     }
 }
