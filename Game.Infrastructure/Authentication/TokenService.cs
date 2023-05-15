@@ -12,13 +12,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Game.Infrastructure.Authentication;
 
-public class JWTManager : IJWTManager
+public class TokenService : ITokenService
 {
     private readonly IDateTImeProvider _dateTimeProvider;
     private readonly JWTSettings _jwtSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public JWTManager(
+    public TokenService(
         IDateTImeProvider dateTimeProvider,
         IOptions<JWTSettings> jwtSettings, 
         IHttpContextAccessor httpContextAccessor)
@@ -28,7 +28,7 @@ public class JWTManager : IJWTManager
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateJWT(User user)
     {
         var claims = new List<Claim>
         {
@@ -74,7 +74,7 @@ public class JWTManager : IJWTManager
         return refreshToken;
     }
 
-    public void SetRefreshToken(Guid id, RefreshToken refreshToken)
+    public void RefreshToken(Guid id, RefreshToken refreshToken)
     {
         var user = InMemory.Users.FirstOrDefault(u => u.Id == id);
 

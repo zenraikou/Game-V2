@@ -2,9 +2,9 @@ using Game.Domain.Entities;
 
 namespace Game.Core.Common.Interfaces.Authentication;
 
-public interface IJWTManager
+public interface ITokenService
 {
-    string GenerateToken(User user);
+    string GenerateJWT(User user);
     RefreshToken GenerateRefreshToken();
-    void SetRefreshToken(Guid id, RefreshToken refreshToken);
+    void RefreshToken(Guid id, RefreshToken refreshToken);
 }

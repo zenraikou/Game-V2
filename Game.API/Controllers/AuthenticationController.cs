@@ -13,18 +13,18 @@ public class AuthenticationController : ControllerBase
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserService _userService;
-    private readonly IJWTManager _jwtManager;
+    private readonly ITokenService _tokenService;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
         IAuthenticationService authenticationService,
         IUserService userService,
-        IJWTManager jwtManager)
+        ITokenService tokenService)
     {
         _logger = logger;
         _authenticationService = authenticationService;
         _userService = userService;
-        _jwtManager = jwtManager;
+        _tokenService = tokenService;
     }
 
     [HttpPost("login")]
@@ -43,7 +43,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register")]
     public ActionResult<AuthenticationResponse> Register(RegisterRequest request)
     {
-        var refreshToken = _jwtManager.GenerateRefreshToken();
+        var refreshToken = _tokenService.GenerateRefreshToken();
         var response = _authenticationService.Register(request, refreshToken);
         return Ok(response);
     }
@@ -72,8 +72,8 @@ public class AuthenticationController : ControllerBase
             return Unauthorized("Refresh token is invalid");
         }
 
-        var token = _jwtManager.GenerateToken(user);
-        _jwtManager.GenerateRefreshToken();
+        var token = _tokenService.GenerateJWT(user);
+        _tokenService.GenerateRefreshToken();
 
         return Ok(token);
     }

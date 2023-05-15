@@ -7,11 +7,11 @@ namespace Game.Infrastructure.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly IJWTManager _jwtManager;
+    private readonly ITokenService _tokenService;
 
-    public AuthenticationService(IJWTManager jwtManager)
+    public AuthenticationService(ITokenService tokenService)
     {
-        _jwtManager = jwtManager;
+        _tokenService = tokenService;
     }
 
     public AuthenticationResponse? Login(LoginRequest request)
@@ -22,9 +22,9 @@ public class AuthenticationService : IAuthenticationService
 
         if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) return null;
 
-        var token = _jwtManager.GenerateToken(user);
-        var refreshToken = _jwtManager.GenerateRefreshToken();
-        _jwtManager.SetRefreshToken(user.Id, refreshToken);
+        var token = _tokenService.GenerateJWT(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+        _tokenService.RefreshToken(user.Id, refreshToken);
 
         var response = new AuthenticationResponse { Token = token };
         return (response);
@@ -54,7 +54,7 @@ public class AuthenticationService : IAuthenticationService
 
         InMemory.Users.Add(user);
 
-        var token = _jwtManager.GenerateToken(user);
+        var token = _tokenService.GenerateJWT(user);
         var response = new AuthenticationResponse { Token = token };
         return response;
     }

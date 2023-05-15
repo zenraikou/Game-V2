@@ -11,9 +11,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
     {
-        services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
-        services.AddSingleton<IJWTManager, JWTManager>();
         services.AddSingleton<IDateTImeProvider, DateTimeProvider>();
+        services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
+        services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddHttpContextAccessor();
