@@ -5,5 +5,5 @@ namespace Game.Core.Common.Interfaces.Authentication;
 public interface ITokenService
 {
     string GenerateAccessToken(User user);
-    RefreshToken GenerateRefreshToken();
+    RefreshToken GenerateRefreshToken(Guid userId);
 }

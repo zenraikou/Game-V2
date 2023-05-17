@@ -5,3 +5,7 @@
 # Replace "Token" with the JWT response received when you successfully register or login using the authentication endpoints.
 GET {{host}}/api/test/greetings
 Authorization: Bearer Token
+
+### User Refresh Token
+GET {{host}}/api/test/user-refresh-token
+Authorization: Bearer Token

@@ -1,6 +1,10 @@
 ### Base URL
 @host = https://localhost:7000
 
+### Refresh Token
+POST {{host}}/api/auth/refresh-token
+Authorization: Bearer Token
+
 ### Register
 # I
 POST {{host}}/api/auth/register

@@ -1,8 +1,8 @@
 namespace Game.Domain.Entities;
 
-public class RefreshToken
+public record RefreshToken
 {
+    public required Guid UserId { get; set; }
     public required string Token { get; set; }
     public required DateTime Expiry { get; set; }
-    public DateTime CreationStamp { get; private init; } = DateTime.UtcNow;
 }

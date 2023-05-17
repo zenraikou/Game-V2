@@ -51,10 +51,11 @@ public class TokenService : ITokenService
         return jwt;
     }
 
-    public RefreshToken GenerateRefreshToken()
+    public RefreshToken GenerateRefreshToken(Guid userId)
     {
         var refreshToken = new RefreshToken
         {
+            UserId = userId,
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             Expiry = _time.Now.AddDays(7)
         };

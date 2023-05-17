@@ -21,6 +21,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserRepository, MockUserRepository>();
+        services.AddScoped<IRefreshTokenRepository, MockRefreshTokenRepository>();
         return services;
     }
 }

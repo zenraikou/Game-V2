@@ -16,19 +16,22 @@ public class AuthenticationController : ControllerBase
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
         ITokenService tokenService,
         IUserService userService,
         IAuthenticationService authenticationService,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _logger = logger;
         _tokenService = tokenService;
         _userService = userService;
         _authenticationService = authenticationService;
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,24 +66,30 @@ public class AuthenticationController : ControllerBase
             return NotFound("User does not exist.");
         }
 
-        if (user.RefreshToken.Equals(cookieRefreshToken) is false)
+        var refreshToken = await _refreshTokenRepository.Get(user.Id);
+
+        if (refreshToken.Token.Equals(cookieRefreshToken) is false)
         {
             Console.WriteLine("Refresh token is invalid."); // temporary
             return Unauthorized("Refresh token is invalid.");
         }
-        else if (user.TokenExpiry < DateTime.UtcNow)
+        else if (refreshToken.Expiry < DateTime.UtcNow)
         {
-            Console.WriteLine("Refresh token is expired."); // temporary
+            // Console.WriteLine("Refresh token is expired."); // temporary
+            Console.WriteLine("Current Date is past Refresh Token Expiry");
+            Console.WriteLine($"Refresh Token Expiry Date: {refreshToken.Expiry}"); // temporary
+            Console.WriteLine($"Current Date: {DateTime.UtcNow}"); // temporary
             return Unauthorized("Refresh token is invalid");
         }
 
         var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        var refreshedToken = _tokenService.GenerateRefreshToken(user.Id);
 
-        user.RefreshToken = refreshToken.Token;
-        user.TokenExpiry = refreshToken.Expiry;
-        user.TokenCreationStamp = refreshToken.CreationStamp;
+        _refreshTokenRepository.Update(refreshedToken);
 
+        Console.WriteLine("Current Date is not past Refresh Token Expiry");
+        Console.WriteLine($"Refresh Token Expiry Date: {refreshToken.Expiry}"); // temporary
+        Console.WriteLine($"Current Date: {DateTime.UtcNow}"); // temporary
         return Ok(accessToken);
     }
 

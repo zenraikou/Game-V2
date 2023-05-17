@@ -9,11 +9,16 @@ namespace Game.Infrastructure.Authentication;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenService _tokenService;
 
-    public AuthenticationService(IUserRepository userRepository, ITokenService tokenService)
+    public AuthenticationService(
+        IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository, 
+        ITokenService tokenService)
     {
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
         _tokenService = tokenService;
     }
 
@@ -28,11 +33,12 @@ public class AuthenticationService : IAuthenticationService
         if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Bad Request: Invalid credentials.");
 
         var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
 
-        user.RefreshToken = refreshToken.Token;
-        user.TokenExpiry = refreshToken.Expiry;
-        user.TokenCreationStamp = refreshToken.CreationStamp;
+        _refreshTokenRepository.Update(refreshToken);
+        // user.RefreshToken = refreshToken.Token;
+        // user.TokenExpiry = refreshToken.Expiry;
+        // user.TokenCreationStamp = refreshToken.CreationStamp;
 
         var response = new AuthenticationResponse { Token = accessToken };
         return (response);
@@ -46,7 +52,6 @@ public class AuthenticationService : IAuthenticationService
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var role = (Role)Enum.Parse(typeof(Role), request.Role.Substring(0, 1).ToUpper() + request.Role.Substring(1).ToLower());
-        var refreshToken = _tokenService.GenerateRefreshToken();
 
         user = new User
         {
@@ -55,13 +60,13 @@ public class AuthenticationService : IAuthenticationService
             UniqueName = request.UniqueName,
             Email = request.Email,
             PasswordHash = passwordHash,
-            Role = role,
-            RefreshToken = refreshToken.Token,
-            TokenExpiry = refreshToken.Expiry,
-            TokenCreationStamp = refreshToken.CreationStamp
+            Role = role
         };
 
         await _userRepository.Post(user);
+
+        var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+        await _refreshTokenRepository.Post(refreshToken);
 
         var accessToken = _tokenService.GenerateAccessToken(user);
         var response = new AuthenticationResponse { Token = accessToken };
