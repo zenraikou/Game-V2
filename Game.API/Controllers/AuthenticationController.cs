@@ -2,7 +2,6 @@ using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Services.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
