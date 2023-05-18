@@ -18,8 +18,8 @@ public static class DependencyInjection
         services.AddSingleton<ITime, Time>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddHttpContextAccessor();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddHttpContextAccessor();
         services.AddScoped<IUserRepository, MockUserRepository>();
         services.AddScoped<IRefreshTokenRepository, MockRefreshTokenRepository>();
         return services;

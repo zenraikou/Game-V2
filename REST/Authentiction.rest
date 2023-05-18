@@ -2,7 +2,7 @@
 @host = https://localhost:7000
 
 ### Refresh Token
-POST {{host}}/api/auth/refresh-token
+GET {{host}}/api/auth/refresh-token
 
 ### Login
 # I

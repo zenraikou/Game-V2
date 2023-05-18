@@ -13,7 +13,7 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid? GetUserClaimsId()
+    public Guid? GetUserIdClaims()
     {
         // Get the token from the Authorization header
         var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];

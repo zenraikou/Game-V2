@@ -12,10 +12,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenService _tokenService;
 
-    public AuthenticationService(
-        IUserRepository userRepository,
-        IRefreshTokenRepository refreshTokenRepository, 
-        ITokenService tokenService)
+    public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, ITokenService tokenService)
     {
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
@@ -36,9 +33,6 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
 
         _refreshTokenRepository.Update(refreshToken);
-        // user.RefreshToken = refreshToken.Token;
-        // user.TokenExpiry = refreshToken.Expiry;
-        // user.TokenCreationStamp = refreshToken.CreationStamp;
 
         var response = new AuthenticationResponse { Token = accessToken };
         return (response);
@@ -65,10 +59,11 @@ public class AuthenticationService : IAuthenticationService
 
         await _userRepository.Post(user);
 
+        var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+
         await _refreshTokenRepository.Post(refreshToken);
 
-        var accessToken = _tokenService.GenerateAccessToken(user);
         var response = new AuthenticationResponse { Token = accessToken };
         return response;
     }

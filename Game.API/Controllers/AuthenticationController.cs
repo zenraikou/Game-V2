@@ -2,7 +2,6 @@ using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Services.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -12,31 +11,28 @@ namespace Game.API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly ILogger<AuthenticationController> _logger;
-    private readonly ITokenService _tokenService;
-    private readonly IUserService _userService;
-    private readonly IAuthenticationService _authenticationService;
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly ITokenService _tokenService;
+    private readonly IAuthenticationService _authenticationService;
 
     public AuthenticationController(
         ILogger<AuthenticationController> logger,
-        ITokenService tokenService,
-        IUserService userService,
-        IAuthenticationService authenticationService,
         IUserRepository userRepository,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        ITokenService tokenService,
+        IAuthenticationService authenticationService)
     {
         _logger = logger;
-        _tokenService = tokenService;
-        _userService = userService;
-        _authenticationService = authenticationService;
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
+        _tokenService = tokenService;
+        _authenticationService = authenticationService;
     }
 
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("refresh-token")]
+    [HttpGet("refresh-token")]
     public async Task<ActionResult<AuthenticationResponse>> RefreshToken()
     {
         var cookieRefreshToken = Request.Cookies["refreshToken"];
@@ -89,12 +85,5 @@ public class AuthenticationController : ControllerBase
     {
         var response = await _authenticationService.Register(request);
         return Ok(response);
-    }
-
-    [HttpGet("claims"), Authorize]
-    public Guid? GetUserClaimsId()
-    {
-        var result = _userService.GetUserClaimsId();
-        return result;
     }
 }
