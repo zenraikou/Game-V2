@@ -30,6 +30,42 @@ public class AuthenticationController : ControllerBase
         _authenticationService = authenticationService;
     }
 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("register")]
+    public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
+    {
+        var response = await _authenticationService.Register(request);
+        return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
+    {
+        var response = await _authenticationService.Login(request);
+        return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var cookieRefreshToken = Request.Cookies["refreshToken"];
+        var refreshToken = await _refreshTokenRepository.Get(t => t.Value == cookieRefreshToken);
+
+        if (refreshToken is null)
+        {
+            return BadRequest();
+        }
+
+        _refreshTokenRepository.Delete(refreshToken);
+        return Ok();
+    }
+
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("refresh-token")]
@@ -65,42 +101,6 @@ public class AuthenticationController : ControllerBase
         _logger.LogInformation("Current Date is not past Refresh Token Expiry");
         _logger.LogInformation($"Refresh Token Expiry Date: {refreshToken.Expiry}");
         _logger.LogInformation($"Current Date: {DateTime.UtcNow}");
-        return Ok(response);
-    }
-
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("login")]
-    public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
-    {
-        var response = await _authenticationService.Login(request);
-        return Ok(response);
-    }
-
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
-    {
-        var cookieRefreshToken = Request.Cookies["refreshToken"];
-        var refreshToken = await _refreshTokenRepository.Get(t => t.Value == cookieRefreshToken);
-
-        if (refreshToken is null)
-        {
-            return BadRequest();
-        }
-
-        _refreshTokenRepository.Delete(refreshToken);
-        return Ok();
-    }
-
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("register")]
-    public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
-    {
-        var response = await _authenticationService.Register(request);
         return Ok(response);
     }
 }
