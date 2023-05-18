@@ -39,7 +39,6 @@ public class AuthenticationController : ControllerBase
         return Ok(response);
     }
 
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("login")]
@@ -49,7 +48,7 @@ public class AuthenticationController : ControllerBase
         return Ok(response);
     }
 
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
@@ -59,7 +58,7 @@ public class AuthenticationController : ControllerBase
 
         if (refreshToken is null)
         {
-            return BadRequest();
+            return Unauthorized();
         }
 
         _refreshTokenRepository.Delete(refreshToken);
