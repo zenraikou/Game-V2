@@ -1,7 +1,13 @@
 ### Base URL
 @host = https://localhost:7000
 
+### Logout
+# Invalidate Refresh Token by deleting it on the database.
+# Logout User on all devices.
+POST {{host}}/api/auth/logout
+
 ### Refresh Token
+# Generate Access Token if Refresh Token is not expired.
 GET {{host}}/api/auth/refresh-token
 
 ### Login

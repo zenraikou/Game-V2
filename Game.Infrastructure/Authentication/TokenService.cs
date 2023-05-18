@@ -28,13 +28,9 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("handle", user.Handle),
-            new Claim(JwtRegisteredClaimNames.Name, user.Name),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.UniqueName),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("role", user.Role.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim("role", user.Role.ToString())
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
@@ -45,7 +41,7 @@ public class TokenService : ITokenService
             signingCredentials: signingCredentials,
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
-            expires: _time.Now.AddHours(_jwtSettings.Expiry));
+            expires: _time.Now.AddMinutes(_jwtSettings.Expiry));
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
         return jwt;

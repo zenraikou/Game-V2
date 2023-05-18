@@ -2,6 +2,7 @@ using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Services.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -76,6 +77,23 @@ public class AuthenticationController : ControllerBase
     {
         var response = await _authenticationService.Login(request);
         return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var cookieRefreshToken = Request.Cookies["refreshToken"];
+        var refreshToken = await _refreshTokenRepository.Get(t => t.Value == cookieRefreshToken);
+
+        if (refreshToken is null)
+        {
+            return BadRequest();
+        }
+
+        _refreshTokenRepository.Delete(refreshToken);
+        return Ok();
     }
 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
