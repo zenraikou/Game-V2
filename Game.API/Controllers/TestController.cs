@@ -1,10 +1,13 @@
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
+[Authorize]
+[ApiController]
 [Route("api/[controller]")]
 public class TestController : ControllerBase
 {
@@ -19,25 +22,10 @@ public class TestController : ControllerBase
         _refreshTokenRepository = refreshTokenRepository;
     }
 
-    [HttpGet("greetings"), Authorize(Roles = "Admin, User")]
+    [HttpGet("greetings")]
     public ActionResult<string> Greetings()
     {
         var greetings = "Hello, World!";
         return Ok(greetings);
-    }
-
-    [HttpGet("user-refresh-token"), Authorize(Roles = "Admin, User")]
-    public async Task<ActionResult<string>> UserRefreshToken()
-    {
-        var id = _userService.GetUserClaimsId();
-        var user = await _userRepository.Get(u => u.Id == id);
-
-        if (user is null)
-        {
-            return NotFound("User does not exist.");
-        }
-
-        var refreshToken = await _refreshTokenRepository.Get(user.Id);
-        return Ok(refreshToken);
     }
 }

@@ -9,10 +9,10 @@ public class MockRefreshTokenRepository : IRefreshTokenRepository
     public static List<RefreshToken> refreshTokens = new();
 
     // get
-    public async Task<RefreshToken> Get(Guid userId)
+    public async Task<RefreshToken?> Get(Expression<Func<RefreshToken, bool>> expression)
     {
-        var refreshToken = refreshTokens.FirstOrDefault(t => t.UserId == userId)!;
-        return await Task.FromResult(refreshToken);
+        IQueryable<RefreshToken> query = refreshTokens.AsQueryable();
+        return await Task.FromResult(query/*AsNoTracking()*/.FirstOrDefault(expression));
     }
     // add
     public async Task Post(RefreshToken refreshToken)
@@ -27,7 +27,7 @@ public class MockRefreshTokenRepository : IRefreshTokenRepository
 
         if (entity is not null)
         {
-            entity.Token = refreshToken.Token; 
+            entity.Value = refreshToken.Value; 
             entity.Expiry = refreshToken.Expiry;
         }
     }

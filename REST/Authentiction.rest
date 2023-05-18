@@ -3,7 +3,16 @@
 
 ### Refresh Token
 POST {{host}}/api/auth/refresh-token
-Authorization: Bearer Token
+
+### Login
+# I
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "uniqueName": "kazuma",
+    "password": "?Ok4"
+}
 
 ### Register
 # I
@@ -20,12 +29,12 @@ Content-Type: application/json
 }
 
 ### Login
-# I
+# II
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-    "uniqueName": "kazuma",
+    "uniqueName": "aqua",
     "password": "?Ok4"
 }
 
@@ -44,12 +53,12 @@ Content-Type: application/json
 }
 
 ### Login
-# II
+# III
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-    "uniqueName": "aqua",
+    "uniqueName": "megumin",
     "password": "?Ok4"
 }
 
@@ -68,12 +77,12 @@ Content-Type: application/json
 }
 
 ### Login
-# III
+# IV
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-    "uniqueName": "megumin",
+    "uniqueName": "darkness",
     "password": "?Ok4"
 }
 
@@ -89,14 +98,4 @@ Content-Type: application/json
     "email": "darkness@konosuba.gg",
     "password": "?Ok4",
     "role": "Admin"
-}
-
-### Login
-# IV
-POST {{host}}/api/auth/login
-Content-Type: application/json
-
-{
-    "uniqueName": "darkness",
-    "password": "?Ok4"
 }

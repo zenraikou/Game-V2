@@ -34,6 +34,44 @@ public class AuthenticationController : ControllerBase
         _refreshTokenRepository = refreshTokenRepository;
     }
 
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<AuthenticationResponse>> RefreshToken()
+    {
+        var cookieRefreshToken = Request.Cookies["refreshToken"];
+        var refreshToken = await _refreshTokenRepository.Get(t => t.Value == cookieRefreshToken);
+
+        if (refreshToken is null)
+        {
+            _logger.LogError("Refresh Token is invalid.");
+            return Unauthorized();
+        }
+
+        if (refreshToken.Expiry < DateTime.UtcNow)
+        {
+            _logger.LogError("Current Date is past Refresh Token Expiry");
+            _logger.LogError($"Refresh Token Expiry Date: {refreshToken.Expiry}");
+            _logger.LogError($"Current Date: {DateTime.UtcNow}");
+            return Unauthorized();
+        }
+
+        var user = await _userRepository.Get(u => u.Id == refreshToken.UserId);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var accessToken = _tokenService.GenerateAccessToken(user);
+        var response = new AuthenticationResponse { Token = accessToken };
+
+        _logger.LogInformation("Current Date is not past Refresh Token Expiry");
+        _logger.LogInformation($"Refresh Token Expiry Date: {refreshToken.Expiry}");
+        _logger.LogInformation($"Current Date: {DateTime.UtcNow}");
+        return Ok(response);
+    }
+
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,46 +89,6 @@ public class AuthenticationController : ControllerBase
     {
         var response = await _authenticationService.Register(request);
         return Ok(response);
-    }
-
-    [HttpPost("refresh-token"), Authorize]
-    public async Task<ActionResult<string>> RefreshToken()
-    {
-        var cookieRefreshToken = Request.Cookies["refreshToken"];
-
-        var id = _userService.GetUserClaimsId();
-        var user = await _userRepository.Get(u => u.Id == id);
-
-        if (user is null)
-        {
-            return NotFound("User does not exist.");
-        }
-
-        var refreshToken = await _refreshTokenRepository.Get(user.Id);
-
-        if (refreshToken.Token.Equals(cookieRefreshToken) is false)
-        {
-            Console.WriteLine("Refresh token is invalid."); // temporary
-            return Unauthorized("Refresh token is invalid.");
-        }
-        else if (refreshToken.Expiry < DateTime.UtcNow)
-        {
-            // Console.WriteLine("Refresh token is expired."); // temporary
-            Console.WriteLine("Current Date is past Refresh Token Expiry");
-            Console.WriteLine($"Refresh Token Expiry Date: {refreshToken.Expiry}"); // temporary
-            Console.WriteLine($"Current Date: {DateTime.UtcNow}"); // temporary
-            return Unauthorized("Refresh token is invalid");
-        }
-
-        var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshedToken = _tokenService.GenerateRefreshToken(user.Id);
-
-        _refreshTokenRepository.Update(refreshedToken);
-
-        Console.WriteLine("Current Date is not past Refresh Token Expiry");
-        Console.WriteLine($"Refresh Token Expiry Date: {refreshToken.Expiry}"); // temporary
-        Console.WriteLine($"Current Date: {DateTime.UtcNow}"); // temporary
-        return Ok(accessToken);
     }
 
     [HttpGet("claims"), Authorize]

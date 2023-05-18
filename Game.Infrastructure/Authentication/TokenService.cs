@@ -56,7 +56,7 @@ public class TokenService : ITokenService
         var refreshToken = new RefreshToken
         {
             UserId = userId,
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Value = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             Expiry = _time.Now.AddDays(7)
         };
 
@@ -66,7 +66,7 @@ public class TokenService : ITokenService
             Expires = refreshToken.Expiry
         };
 
-        _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
         return refreshToken;
     }
 }
