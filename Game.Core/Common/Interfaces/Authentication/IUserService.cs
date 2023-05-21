@@ -1,6 +1,8 @@
+using System.Security.Claims;
+
 namespace Game.Core.Common.Interfaces.Authentication;
 
 public interface IUserService
 {
-    Guid? GetUserIdClaims();
+    string? GetUserClaim(Func<Claim, bool> expression);
 }

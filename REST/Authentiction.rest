@@ -24,6 +24,7 @@ Content-Type: application/json
 # I
 POST {{host}}/api/auth/register
 Content-Type: application/json
+Fingerprint: Browser
 
 {
     "handle": "kazuma",
@@ -48,6 +49,7 @@ Content-Type: application/json
 # II
 POST {{host}}/api/auth/register
 Content-Type: application/json
+Fingerprint: iOS
 
 {
     "handle": "aqua",
@@ -72,6 +74,7 @@ Content-Type: application/json
 # III
 POST {{host}}/api/auth/register
 Content-Type: application/json
+Fingerprint: Android
 
 {
     "handle": "megumin",
@@ -96,6 +99,7 @@ Content-Type: application/json
 # IV
 POST {{host}}/api/auth/register
 Content-Type: application/json
+Fingerprint: Desktop
 
 {
     "handle": "darkness",

@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Time;
@@ -24,11 +23,11 @@ public class TokenService : ITokenService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string GenerateAccessToken(User user)
+    public string GenerateJWT(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim("jti", Guid.NewGuid().ToString()),
             new Claim("handle", user.Handle),
             new Claim("role", user.Role.ToString())
         };
@@ -47,22 +46,20 @@ public class TokenService : ITokenService
         return jwt;
     }
 
-    public RefreshToken GenerateRefreshToken(Guid userId)
+    public Session GenerateSession(string jwt)
     {
-        var refreshToken = new RefreshToken
+        var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+
+        if (fingerprint is null) throw new Exception("Fingerprint is null.");
+
+        var session = new Session
         {
-            UserId = userId,
-            Value = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expiry = _time.Now.AddDays(7)
+            JTI = jti,
+            Fingerprint = fingerprint,
+            Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };
 
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = refreshToken.Expiry
-        };
-
-        _httpContextAccessor.HttpContext?.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
-        return refreshToken;
+        return session;
     }
 }

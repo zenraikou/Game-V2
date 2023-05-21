@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Game.Core.Common.Interfaces.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -13,12 +14,12 @@ public class UserService : IUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid? GetUserIdClaims()
+    public string? GetUserClaim(Func<Claim, bool> expression)
     {
         // Get the token from the Authorization header
         var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
         var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token); // Read the token
-        var id = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value; // Extract the custom claim
-        return id is null ? null : Guid.Parse(id);
+        var claim = jwt.Claims.FirstOrDefault(expression)?.Value; // Extract the custom claim
+        return claim;
     }
 }

@@ -9,33 +9,20 @@ namespace Game.Infrastructure.Authentication;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly ISessionRepository _sessionRepository;
     private readonly ITokenService _tokenService;
+    private readonly IUserService _userService;
 
-    public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, ITokenService tokenService)
+    public AuthenticationService(
+        IUserRepository userRepository, 
+        ISessionRepository sessionRepository, 
+        ITokenService tokenService, 
+        IUserService userService)
     {
         _userRepository = userRepository;
-        _refreshTokenRepository = refreshTokenRepository;
+        _sessionRepository = sessionRepository;
         _tokenService = tokenService;
-    }
-
-    public async Task<AuthenticationResponse?> Login(LoginRequest request)
-    {
-        var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
-
-        // replace exception with global error handler later
-        if (user is null) throw new Exception("Bad Request: Invalid credentials.");
-
-        // replace exception with global error handler later
-        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Bad Request: Invalid credentials.");
-
-        var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
-
-        _refreshTokenRepository.Update(refreshToken);
-
-        var response = new AuthenticationResponse { Token = accessToken };
-        return (response);
+        _userService = userService;
     }
 
     public async Task<AuthenticationResponse?> Register(RegisterRequest request)
@@ -59,12 +46,46 @@ public class AuthenticationService : IAuthenticationService
 
         await _userRepository.Post(user);
 
-        var accessToken = _tokenService.GenerateAccessToken(user);
-        var refreshToken = _tokenService.GenerateRefreshToken(user.Id);
+        var jwt = _tokenService.GenerateJWT(user);
+        var session = _tokenService.GenerateSession(jwt);
 
-        await _refreshTokenRepository.Post(refreshToken);
+        await _sessionRepository.Post(session);
 
-        var response = new AuthenticationResponse { Token = accessToken };
+        var response = new AuthenticationResponse { Token = jwt };
         return response;
+    }
+
+    public async Task<AuthenticationResponse?> Login(LoginRequest request)
+    {
+        var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
+
+        // replace exception with global error handler later
+        if (user is null) throw new Exception("Bad Request: Invalid credentials.");
+
+        // replace exception with global error handler later
+        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Bad Request: Invalid credentials.");
+
+        var jwt = _tokenService.GenerateJWT(user);
+        var session = _tokenService.GenerateSession(jwt);
+
+        _sessionRepository.Update(session);
+
+        var response = new AuthenticationResponse { Token = jwt };
+        return (response);
+    }
+
+    public async Task Logout()
+    {
+        var jti = _userService.GetUserClaim(c => c.Type == "jti");
+
+        // replace exception with global error handler later
+        if (jti is null) throw new Exception("JTI is null.");
+
+        var session = await _sessionRepository.Get(s => s.JTI == jti);
+
+        // replace exception with global error handler later
+        if (session is null) throw new Exception("Session is null.");
+
+        _sessionRepository.Delete(session);
     }
 }
