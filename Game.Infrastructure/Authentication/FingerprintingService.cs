@@ -5,18 +5,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace Game.Infrastructure.Authentication;
 
-public class FingerprintService : IFingerprintService
+public class FingerprintingService : IFingerprintingService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ISessionRepository _sessionRepository;
 
-    public FingerprintService(IHttpContextAccessor httpContextAccessor, ISessionRepository sessionRepository)
+    public FingerprintingService(IHttpContextAccessor httpContextAccessor, ISessionRepository sessionRepository)
     {
         _httpContextAccessor = httpContextAccessor;
         _sessionRepository = sessionRepository;
     }
 
-    public async Task ValidateFingerprint()
+    public async Task Validate()
     {
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
         var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];

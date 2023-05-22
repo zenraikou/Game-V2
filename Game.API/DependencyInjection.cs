@@ -1,4 +1,5 @@
 using System.Text;
+using Game.API.Extensions;
 using Game.API.Middlewares;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,7 +12,7 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddRouting(options => options.LowercaseUrls = true);
 
-        services.AddScoped<FingerprintMiddleware>();
+        services.AddFingerprinting();
         services.AddAuthentication().AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
@@ -24,6 +25,7 @@ public static class DependencyInjection
             };
         });
 
+        services.AddExceptionHandling();
         return services;
     }
 
@@ -31,10 +33,11 @@ public static class DependencyInjection
     {
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseMiddleware<FingerprintMiddleware>();
+        app.UseFingerprinting();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
+        app.UseExceptionHandling();
         return app;
     }
 }

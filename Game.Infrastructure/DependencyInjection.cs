@@ -18,7 +18,7 @@ public static class DependencyInjection
         services.AddSingleton<ITime, Time>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IFingerprintService, FingerprintService>();
+        services.AddScoped<IFingerprintingService, FingerprintingService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddHttpContextAccessor();
         services.AddScoped<IUserRepository, MockUserRepository>();

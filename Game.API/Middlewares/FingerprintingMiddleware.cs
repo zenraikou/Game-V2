@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Game.API.Middlewares;
 
-public class FingerprintMiddleware : IMiddleware
+public class FingerprintingMiddleware : IMiddleware
 {
-    private readonly IFingerprintService _fingerprintService;
+    private readonly IFingerprintingService _fingerprintingService;
 
-    public FingerprintMiddleware(IFingerprintService fingerprintService)
+    public FingerprintingMiddleware(IFingerprintingService fingerprintingService)
     {
-        _fingerprintService = fingerprintService;
+        _fingerprintingService = fingerprintingService;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -24,7 +24,7 @@ public class FingerprintMiddleware : IMiddleware
 
         if (isAuthorized)
         {
-            await _fingerprintService.ValidateFingerprint();
+            await _fingerprintingService.Validate();
         }
 
         await next.Invoke(context);
