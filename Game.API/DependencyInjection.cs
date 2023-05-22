@@ -1,6 +1,5 @@
 using System.Text;
 using Game.API.Extensions;
-using Game.API.Middlewares;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Game.API;

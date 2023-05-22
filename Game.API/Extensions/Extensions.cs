@@ -4,7 +4,7 @@ namespace Game.API.Extensions;
 
 public static class Extensions
 {
-    // Fingerprinting
+    // Device Fingerprinting
     public static IServiceCollection AddFingerprinting(this IServiceCollection services)
     {
         services.AddScoped<FingerprintingMiddleware>();
@@ -17,7 +17,7 @@ public static class Extensions
         return app;
     }
 
-    // Global Error Handler
+    // Global Exception Handling
     public static IServiceCollection AddExceptionHandling(this IServiceCollection services)
     {
         services.AddScoped<ExceptionHandlingMiddleware>();
