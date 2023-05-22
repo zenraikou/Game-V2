@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+using Game.API.Attributes;
 using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
+[Fingerprinting]
 [ApiController]
 [Route("api/auth")]
 public class AuthenticationController : ControllerBase

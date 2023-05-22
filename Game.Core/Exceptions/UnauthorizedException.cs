@@ -1,6 +1,6 @@
-    namespace Game.Core.Exceptions;
+namespace Game.Core.Exceptions;
 
-    public class UnauthorizedException : Exception
-    {
-        public UnauthorizedException(string message) : base(message) { }
-    }
+public class UnauthorizedException : Exception
+{
+    public UnauthorizedException(string message) : base(message) { }
+}

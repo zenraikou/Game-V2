@@ -1,3 +1,4 @@
+using Game.API.Attributes;
 using Game.Core.Common.Interfaces.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
@@ -15,18 +16,20 @@ public class FingerprintingMiddleware : IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var endpoint = context.GetEndpoint();
+        var fingerprint = context.Request.Headers["Fingerprint"].ToString();
 
-        if (endpoint is null) throw new Exception("Endpoint not found.");
+        if (endpoint?.Metadata.GetMetadata<FingerprintingAttribute>() is not null)
+        {
+            if (fingerprint is null) throw new Exception("Fingerprint is required.");
+        }
 
-        var authorizeAttributes = endpoint.Metadata.GetOrderedMetadata<AuthorizeAttribute>();
-        bool isAuthorized = authorizeAttributes.Any();
-        Console.WriteLine($"Authorized Endpoint: {isAuthorized}");
-
-        if (isAuthorized)
+        if (endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() is not null)
         {
             await _fingerprintingService.Validate();
         }
 
-        await next.Invoke(context);
+        bool isAuthorized = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() is not null; // temporary
+        Console.WriteLine($"Authorized Endpoint: {isAuthorized}"); // temporary
+        await next(context);
     }
 }

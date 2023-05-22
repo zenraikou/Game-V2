@@ -20,7 +20,11 @@ public class FingerprintingService : IFingerprintingService
     {
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
         var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
-        var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")?.Value.ToString();
+        var handler = new JwtSecurityTokenHandler();
+
+        if (handler.CanReadToken(jwt) is false) throw new Exception("Invalid JWT.");
+
+        var jti = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")?.Value.ToString();
         var session = await _sessionRepository.Get(s => s.JTI == jti);
 
         if (fingerprint is null) throw new Exception("Fingerprint not found.");

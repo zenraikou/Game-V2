@@ -11,7 +11,7 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddRouting(options => options.LowercaseUrls = true);
 
-        services.AddFingerprinting();
+        // services.AddFingerprinting();
         services.AddAuthentication().AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
@@ -32,11 +32,11 @@ public static class DependencyInjection
     {
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseFingerprinting();
+        // app.UseFingerprinting();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
         app.UseExceptionHandling();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
         return app;
     }
 }

@@ -1,6 +1,7 @@
 using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Exceptions;
 using Game.Core.Services.Authentication;
 using Game.Domain.Entities;
 
@@ -29,7 +30,7 @@ public class AuthenticationService : IAuthenticationService
     {
         var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
 
-        if (user is not null) throw new Exception("Bad Request: User already exists.");
+        if (user is not null) throw new BadRequestException("ID already taken.");
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var role = (Role)Enum.Parse(typeof(Role), request.Role.Substring(0, 1).ToUpper() + request.Role.Substring(1).ToLower());
