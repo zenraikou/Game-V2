@@ -5,7 +5,7 @@
 # Replace "Token" with the JWT response received when you successfully register or login using the authentication endpoints.
 GET {{host}}/api/test/greetings
 Authorization: Bearer Token
-Fingerprint: Browser-Fingerprint
+Fingerprint: Browser
 
 ### Session
 # Get User Session

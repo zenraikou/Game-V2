@@ -1,0 +1,32 @@
+using System.IdentityModel.Tokens.Jwt;
+using Game.Core.Common.Interfaces.Authentication;
+using Game.Core.Common.Interfaces.Persistence;
+using Microsoft.AspNetCore.Http;
+
+namespace Game.Infrastructure.Authentication;
+
+public class FingerprintService : IFingerprintService
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ISessionRepository _sessionRepository;
+
+    public FingerprintService(IHttpContextAccessor httpContextAccessor, ISessionRepository sessionRepository)
+    {
+        _httpContextAccessor = httpContextAccessor;
+        _sessionRepository = sessionRepository;
+    }
+
+    public async Task ValidateFingerprint()
+    {
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+        var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")?.Value.ToString();
+        var session = await _sessionRepository.Get(s => s.JTI == jti);
+
+        if (fingerprint is null) throw new Exception("Fingerprint not found.");
+        if (session is null) throw new Exception("Session not found.");
+        Console.WriteLine($"JTI: {session.JTI}, Fingerprint: {session.Fingerprint}");
+        if (session.Fingerprint.Equals(fingerprint) is false) throw new Exception("Fingerprint is invalid.");
+        await Task.CompletedTask;
+    }
+}
