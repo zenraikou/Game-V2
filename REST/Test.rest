@@ -11,3 +11,4 @@ Fingerprint: Browser
 # Get User Session
 GET {{host}}/api/test/session
 Authorization: Bearer Token
+Fingerprint: Browser
