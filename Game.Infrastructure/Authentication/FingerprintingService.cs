@@ -19,19 +19,30 @@ public class FingerprintingService : IFingerprintingService
 
     public async Task Validate()
     {
-        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
         var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+
+        if (jwt is null || fingerprint is null) 
+        {
+            throw new UnauthorizedException("Invalid credentials.");
+        }
+
         var handler = new JwtSecurityTokenHandler();
 
-        if (handler.CanReadToken(jwt) is false) throw new UnauthorizedException("Invalid JWT.");
+        if (!handler.CanReadToken(jwt))
+        {
+            throw new UnauthorizedException("Invalid credentials.");
+        }
 
-        var jti = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")?.Value.ToString();
+        var token = handler.ReadJwtToken(jwt);
+        var jti = token.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
         var session = await _sessionRepository.Get(s => s.JTI == jti);
 
-        if (fingerprint is null) throw new UnauthorizedException("Fingerprint not found.");
-        if (session is null) throw new UnauthorizedException("Session not found.");
-        Console.WriteLine($"JTI: {session.JTI}, Fingerprint: {session.Fingerprint}");
-        if (session.Fingerprint.Equals(fingerprint) is false) throw new UnauthorizedException("Fingerprint is invalid.");
+        if (session is null || !session.Fingerprint.Equals(fingerprint))
+        {
+            throw new UnauthorizedException("Invalid credentials.");
+        }
+
         await Task.CompletedTask;
     }
 }

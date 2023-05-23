@@ -2,13 +2,13 @@
 @host = https://localhost:7000
 
 ### Greetings
-# Replace "Token" with the JWT response received when you successfully register or login using the authentication endpoints.
+# Replace "JWT" with the received Token response when you successfully register or login using the authentication endpoints.
 GET {{host}}/api/test/greetings
-Authorization: Bearer Token
+Authorization: Bearer JWT
 Fingerprint: Browser
 
 ### Session
 # Get User Session
 GET {{host}}/api/test/session
-Authorization: Bearer Token
+Authorization: Bearer JWT
 Fingerprint: Browser

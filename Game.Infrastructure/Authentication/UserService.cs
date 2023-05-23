@@ -16,10 +16,10 @@ public class UserService : IUserService
 
     public string? GetUserClaim(Func<Claim, bool> expression)
     {
-        // Get the token from the Authorization header
-        var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
-        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token); // Read the token
-        var claim = jwt.Claims.FirstOrDefault(expression)?.Value; // Extract the custom claim
+        // Get the jwt from the Authorization header
+        var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(jwt); // Read the jwt
+        var claim = token.Claims.FirstOrDefault(expression)?.Value; // Extract the custom claim
         return claim;
     }
 }

@@ -61,42 +61,4 @@ public class AuthenticationController : ControllerBase
         await _authenticationService.Logout();
         return Ok();
     }
-
-    // [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [HttpGet("refresh-token")]
-    // public async Task<ActionResult<AuthenticationResponse>> RefreshToken()
-    // {
-    //     var cookieRefreshToken = Request.Cookies["refreshToken"];
-    //     var refreshToken = await _refreshTokenRepository.Get(t => t.Value == cookieRefreshToken);
-
-    //     if (refreshToken is null)
-    //     {
-    //         _logger.LogError("Refresh Token is invalid.");
-    //         return Unauthorized();
-    //     }
-
-    //     if (refreshToken.Expiry < DateTime.UtcNow)
-    //     {
-    //         _logger.LogError("Current Date is past Refresh Token Expiry");
-    //         _logger.LogError($"Refresh Token Expiry Date: {refreshToken.Expiry}");
-    //         _logger.LogError($"Current Date: {DateTime.UtcNow}");
-    //         return Unauthorized();
-    //     }
-
-    //     var user = await _userRepository.Get(u => u.Id == refreshToken.UserId);
-
-    //     if (user is null)
-    //     {
-    //         return Unauthorized();
-    //     }
-
-    //     var jwt = _tokenService.GenerateJWT(user);
-    //     var response = new AuthenticationResponse { Token = jwt };
-
-    //     _logger.LogInformation("Current Date is not past Refresh Token Expiry");
-    //     _logger.LogInformation($"Refresh Token Expiry Date: {refreshToken.Expiry}");
-    //     _logger.LogInformation($"Current Date: {DateTime.UtcNow}");
-    //     return Ok(response);
-    // }
 }

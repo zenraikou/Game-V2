@@ -36,7 +36,7 @@ public class FingerprintingMiddleware : IMiddleware
         }
 
         _logger.LogInformation($"Authorization Header Required: {authorize}"); // temporary
-        _logger.LogInformation($"Fingerprinting Is Required: {!noFingerprinting}"); // temporary
+        _logger.LogInformation($"Fingerprint Header Is Required: {!noFingerprinting}"); // temporary
         await next(context);
     }
 }
