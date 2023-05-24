@@ -21,9 +21,9 @@ public class FingerprintingMiddleware : IMiddleware
         var endpoint = context.GetEndpoint();
         var fingerprint = context.Request.Headers["Fingerprint"].ToString();
 
+        var authorize = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() is not null;
         var fingerprinting = endpoint?.Metadata.GetMetadata<FingerprintingAttribute>() is not null;
         var noFingerprinting = endpoint?.Metadata.GetMetadata<NoFingerprintingAttribute>() is not null;
-        var authorize = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() is not null;
 
         if (noFingerprinting is false)
         {

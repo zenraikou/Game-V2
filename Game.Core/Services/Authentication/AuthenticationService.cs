@@ -61,10 +61,10 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userRepository.Get(u => u.UniqueName == request.UniqueName);
 
         // replace exception with global error handler later
-        if (user is null) throw new Exception("Bad Request: Invalid credentials.");
-
-        // replace exception with global error handler later
-        if (BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash) is false) throw new Exception("Bad Request: Invalid credentials.");
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        {
+            throw new BadRequestException("Invalid credentials.");
+        }    
 
         var jwt = _tokenService.GenerateJWT(user);
         var session = _tokenService.GenerateSession(jwt);
@@ -80,12 +80,18 @@ public class AuthenticationService : IAuthenticationService
         var jti = _userService.GetUserClaim(c => c.Type == "jti");
 
         // replace exception with global error handler later
-        if (jti is null) throw new Exception("JTI is null.");
+        if (jti is null)
+        {
+            throw new Exception("JTI is null.");
+        }
 
         var session = await _sessionRepository.Get(s => s.JTI == jti);
 
         // replace exception with global error handler later
-        if (session is null) throw new Exception("Session is null.");
+        if (session is null)
+        {
+            throw new Exception("Session is null.");
+        }
 
         _sessionRepository.Delete(session);
     }
