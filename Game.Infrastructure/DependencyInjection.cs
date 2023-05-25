@@ -16,7 +16,7 @@ public static class DependencyInjection
             options.UseSqlServer(configuration.GetConnectionString("GameConnection"));
         });
 
-        services.AddScoped<IUserRepository, MockUserRepository>();
+        services.AddScoped<IPlayerRepository, MockPlayerRepository>();
         services.AddScoped<ISessionRepository, MockSessionRepository>();
 
         return services;

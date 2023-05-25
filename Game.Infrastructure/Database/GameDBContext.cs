@@ -7,7 +7,8 @@ public class GameDBContext : DbContext
 {
     public GameDBContext(DbContextOptions<GameDBContext> options) : base(options) { }
 
-    public DbSet<User> Users => Set<User>();
+    public virtual DbSet<Player> Players => Set<Player>();
+    public virtual DbSet<Session> Sessions => Set<Session>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

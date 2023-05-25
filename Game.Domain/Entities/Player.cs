@@ -1,6 +1,6 @@
 namespace Game.Domain.Entities;
 
-public class User
+public class Player
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public required string Handle { get; set; }

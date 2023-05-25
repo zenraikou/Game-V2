@@ -33,7 +33,7 @@ Fingerprint: Browser
     "uniqueName": "kazuma",
     "email": "kazuma@konosuba.gg",
     "password": "?Ok4",
-    "role": "Admin"
+    "role": "Player"
 }
 
 ### Login
@@ -58,7 +58,7 @@ Fingerprint: iOS
     "uniqueName": "aqua",
     "email": "aqua@konosuba.gg",
     "password": "?Ok4",
-    "role": "Admin"
+    "role": "Player"
 }
 
 ### Login
@@ -83,7 +83,7 @@ Fingerprint: Android
     "uniqueName": "megumin",
     "email": "megumin@konosuba.gg",
     "password": "?Ok4",
-    "role": "Admin"
+    "role": "Player"
 }
 
 ### Login
@@ -108,5 +108,5 @@ Fingerprint: Desktop
     "uniqueName": "darkness",
     "email": "darkness@konosuba.gg",
     "password": "?Ok4",
-    "role": "Admin"
+    "role": "Player"
 }

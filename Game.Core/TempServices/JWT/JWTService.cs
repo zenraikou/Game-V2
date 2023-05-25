@@ -8,27 +8,27 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Game.Core.TempServices.Token;
+namespace Game.Core.TempServices.JWT;
 
-public class TokenService : ITokenService
+public class JWTService : IJWTService
 {
     private readonly JWTSettings _jwtSettings;
     private readonly ITime _time;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public TokenService(IOptions<JWTSettings> jwtSettings, ITime time, IHttpContextAccessor httpContextAccessor)
+    public JWTService(IOptions<JWTSettings> jwtSettings, ITime time, IHttpContextAccessor httpContextAccessor)
     {
         _jwtSettings = jwtSettings.Value;
         _time = time;
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string GenerateJWT(User user)
+    public string GenerateJWT(Player player)
     {
         var claims = new List<Claim>
         {
-            new Claim("id", user.Id.ToString()),
-            new Claim("role", user.Role.ToString()),
+            new Claim("id", player.Id.ToString()),
+            new Claim("role", player.Role.ToString()),
             new Claim("jti", Guid.NewGuid().ToString())
         };
 

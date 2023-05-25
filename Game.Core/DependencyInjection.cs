@@ -4,8 +4,8 @@ using Game.Core.TempServices.Authentication;
 using Game.Core.TempServices.Fingerprinting;
 using Game.Core.TempServices.Time;
 using Game.Core.TempServices.TIme;
-using Game.Core.TempServices.Token;
-using Game.Core.TempServices.UserClaim;
+using Game.Core.TempServices.JWT;
+using Game.Core.TempServices.PlayerClaim;
 using Game.Infrastructure.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +21,8 @@ public static class DependencyInjection
         
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();
-        services.AddSingleton<ITokenService, TokenService>();
-        services.AddScoped<IUserClaimService, UserClaimService>();
+        services.AddSingleton<IJWTService, JWTService>();
+        services.AddScoped<IPlayerClaimService, PlayerClaimService>();
         services.AddHttpContextAccessor();
         services.AddScoped<IFingerprintingService, FingerprintingService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

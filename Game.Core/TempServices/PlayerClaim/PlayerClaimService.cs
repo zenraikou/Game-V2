@@ -1,20 +1,20 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Game.Core.TempServices.UserClaim;
+using Game.Core.TempServices.PlayerClaim;
 using Microsoft.AspNetCore.Http;
 
 namespace Game.Infrastructure.Authentication;
 
-public class UserClaimService : IUserClaimService
+public class PlayerClaimService : IPlayerClaimService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserClaimService(IHttpContextAccessor httpContextAccessor)
+    public PlayerClaimService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? GetUserClaim(Func<Claim, bool> expression)
+    public string? GetPlayerClaim(Func<Claim, bool> expression)
     {
         // Get the jwt from the Authorization header
         var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
