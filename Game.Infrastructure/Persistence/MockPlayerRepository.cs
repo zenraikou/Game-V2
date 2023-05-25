@@ -34,7 +34,7 @@ public class MockPlayerRepository : IPlayerRepository
         await Task.CompletedTask;
     }
 
-    public void Update(Player player)
+    public async Task Update(Player player)
     {
         var entity = players.FirstOrDefault(u => u.Id == player.Id);
 
@@ -47,10 +47,13 @@ public class MockPlayerRepository : IPlayerRepository
             entity.PasswordHash = player.PasswordHash;
             entity.Role = player.Role;
         }
+
+        await Task.CompletedTask;
     }
 
-    public void Delete(Player player)
+    public async Task Delete(Player player)
     {
         players.Remove(player);
+        await Task.CompletedTask;
     }
 }
