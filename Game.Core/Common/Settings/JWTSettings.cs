@@ -1,4 +1,4 @@
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.Common.Settings;
 
 public class JWTSettings
 {

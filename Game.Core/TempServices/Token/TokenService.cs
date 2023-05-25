@@ -1,14 +1,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Game.Core.Common.Interfaces.Authentication;
-using Game.Core.Common.Interfaces.Time;
+using Game.Core.Common.Settings;
+using Game.Core.TempServices.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.TempServices.Token;
 
 public class TokenService : ITokenService
 {

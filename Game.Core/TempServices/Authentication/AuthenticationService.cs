@@ -1,29 +1,29 @@
 using Game.Contracts.Authentication;
-using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
-using Game.Core.Services.Authentication;
+using Game.Core.TempServices.Token;
+using Game.Core.TempServices.UserClaim;
 using Game.Domain.Entities;
 
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.TempServices.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
     private readonly ISessionRepository _sessionRepository;
     private readonly ITokenService _tokenService;
-    private readonly IUserService _userService;
+    private readonly IUserClaimService _userClaimService;
 
     public AuthenticationService(
         IUserRepository userRepository, 
         ISessionRepository sessionRepository, 
         ITokenService tokenService, 
-        IUserService userService)
+        IUserClaimService userClaimService)
     {
         _userRepository = userRepository;
         _sessionRepository = sessionRepository;
         _tokenService = tokenService;
-        _userService = userService;
+        _userClaimService = userClaimService;
     }
 
     public async Task<AuthenticationResponse?> Register(RegisterRequest request)
@@ -77,7 +77,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task Logout()
     {
-        var jti = _userService.GetUserClaim(c => c.Type == "jti");
+        var jti = _userClaimService.GetUserClaim(c => c.Type == "jti");
 
         // replace exception with global error handler later
         if (jti is null)

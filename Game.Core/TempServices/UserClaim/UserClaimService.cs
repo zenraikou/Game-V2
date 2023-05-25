@@ -1,15 +1,15 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Game.Core.Common.Interfaces.Authentication;
+using Game.Core.TempServices.UserClaim;
 using Microsoft.AspNetCore.Http;
 
 namespace Game.Infrastructure.Authentication;
 
-public class UserService : IUserService
+public class UserClaimService : IUserClaimService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserService(IHttpContextAccessor httpContextAccessor)
+    public UserClaimService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }

@@ -1,10 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
-using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Microsoft.AspNetCore.Http;
 
-namespace Game.Infrastructure.Authentication;
+namespace Game.Core.TempServices.Fingerprinting;
 
 public class FingerprintingService : IFingerprintingService
 {

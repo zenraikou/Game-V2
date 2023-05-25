@@ -1,4 +1,4 @@
-namespace Game.Core.Common.Interfaces.Authentication;
+namespace Game.Core.TempServices.Fingerprinting;
 
 public interface IFingerprintingService
 {

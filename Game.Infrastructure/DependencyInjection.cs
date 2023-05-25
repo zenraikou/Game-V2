@@ -1,10 +1,7 @@
-using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Common.Interfaces.Time;
-using Game.Core.Services.Authentication;
-using Game.Infrastructure.Authentication;
+using Game.Infrastructure.Database;
 using Game.Infrastructure.Persistence;
-using Game.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,15 +11,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
     {
-        services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
-        services.AddSingleton<ITime, Time>();
-        services.AddSingleton<ITokenService, TokenService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IFingerprintingService, FingerprintingService>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddHttpContextAccessor();
+        services.AddDbContext<GameDBContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("GameConnection"));
+        });
+
         services.AddScoped<IUserRepository, MockUserRepository>();
         services.AddScoped<ISessionRepository, MockSessionRepository>();
+
         return services;
     }
 }

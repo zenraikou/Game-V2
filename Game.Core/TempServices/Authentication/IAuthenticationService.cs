@@ -1,6 +1,6 @@
 using Game.Contracts.Authentication;
 
-namespace Game.Core.Services.Authentication;
+namespace Game.Core.TempServices.Authentication;
 
 public interface IAuthenticationService
 {

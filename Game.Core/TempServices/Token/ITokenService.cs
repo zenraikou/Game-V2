@@ -1,6 +1,6 @@
 using Game.Domain.Entities;
 
-namespace Game.Core.Common.Interfaces.Authentication;
+namespace Game.Core.TempServices.Token;
 
 public interface ITokenService
 {

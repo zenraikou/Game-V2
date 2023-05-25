@@ -1,4 +1,4 @@
-namespace Game.Core.Common.Interfaces.Time;
+namespace Game.Core.TempServices.Time;
 
 public interface ITime
 {

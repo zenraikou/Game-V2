@@ -1,6 +1,6 @@
 using Game.API.Attributes;
-using Game.Core.Common.Interfaces.Authentication;
 using Game.Core.Exceptions;
+using Game.Core.TempServices.Fingerprinting;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Game.API.Middlewares;
