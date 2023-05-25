@@ -1,13 +1,5 @@
-using System.Linq.Expressions;
 using Game.Domain.Entities;
 
 namespace Game.Core.Common.Interfaces.Persistence;
 
-public interface IPlayerRepository
-{
-    Task<IEnumerable<Player>> GetAll(Expression<Func<Player, bool>>? expression = null);
-    Task<Player?> Get(Expression<Func<Player, bool>> expression);
-    Task Post(Player players);
-    Task Update(Player players);
-    Task Delete(Player players);
-}
+public interface IPlayerRepository : IGenericRepository<Player> { }

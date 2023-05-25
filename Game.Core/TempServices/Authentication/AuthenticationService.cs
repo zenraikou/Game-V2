@@ -9,27 +9,20 @@ namespace Game.Core.TempServices.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly IPlayerRepository _playerRepository;
-    private readonly ISessionRepository _sessionRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IJWTService _jwtService;
     private readonly IPlayerClaimService _playerClaimService;
 
-    public AuthenticationService(
-        IPlayerRepository playerRepository, 
-        ISessionRepository sessionRepository, 
-        IJWTService jwtService, 
-        IPlayerClaimService playerClaimService)
+    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, IPlayerClaimService playerClaimService)
     {
-        _playerRepository = playerRepository;
-        _sessionRepository = sessionRepository;
         _jwtService = jwtService;
         _playerClaimService = playerClaimService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthenticationResponse?> Register(RegisterRequest request)
     {
-        var player = await _playerRepository.Get(u => u.UniqueName == request.UniqueName);
-
+        var player = await _unitOfWork.Players.Get(u => u.UniqueName == request.UniqueName);
         if (player is not null) throw new BadRequestException("ID already taken.");
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -45,12 +38,12 @@ public class AuthenticationService : IAuthenticationService
             Role = role
         };
 
-        await _playerRepository.Post(player);
+        await _unitOfWork.Players.Post(player);
 
         var jwt = _jwtService.GenerateJWT(player);
         var session = _jwtService.GenerateSession(jwt);
 
-        await _sessionRepository.Post(session);
+        await _unitOfWork.Sessions.Post(session);
 
         var response = new AuthenticationResponse { JWT = jwt };
         return response;
@@ -58,18 +51,13 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AuthenticationResponse?> Login(LoginRequest request)
     {
-        var user = await _playerRepository.Get(u => u.UniqueName == request.UniqueName);
-
-        // replace exception with global error handler later
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-        {
-            throw new BadRequestException("Invalid credentials.");
-        }    
+        var user = await _unitOfWork.Players.Get(u => u.UniqueName == request.UniqueName);
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) throw new BadRequestException("Invalid credentials.");
 
         var jwt = _jwtService.GenerateJWT(user);
         var session = _jwtService.GenerateSession(jwt);
 
-        _sessionRepository.Update(session);
+        await _unitOfWork.Sessions.Update(session);
 
         var response = new AuthenticationResponse { JWT = jwt };
         return (response);
@@ -78,21 +66,11 @@ public class AuthenticationService : IAuthenticationService
     public async Task Logout()
     {
         var jti = _playerClaimService.GetPlayerClaim(c => c.Type == "jti");
+        if (jti is null) throw new UnauthorizedException("Invalid access.");
 
-        // replace exception with global error handler later
-        if (jti is null)
-        {
-            throw new Exception("JTI is null.");
-        }
+        var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
+        if (session is null) throw new UnauthorizedException("Invalid access.");
 
-        var session = await _sessionRepository.Get(s => s.JTI == jti);
-
-        // replace exception with global error handler later
-        if (session is null)
-        {
-            throw new Exception("Session is null.");
-        }
-
-        _sessionRepository.Delete(session);
+        await _unitOfWork.Sessions.Delete(session);
     }
 }

@@ -11,13 +11,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
     {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddDbContext<GameDBContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("GameConnection"));
         });
-
-        services.AddScoped<IPlayerRepository, MockPlayerRepository>();
-        services.AddScoped<ISessionRepository, MockSessionRepository>();
 
         return services;
     }
