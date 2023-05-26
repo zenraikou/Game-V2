@@ -1,0 +1,4 @@
+### Base URL
+@host = https://localhost:7000
+
+GET {{host}}/api/players
