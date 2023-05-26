@@ -1,13 +1,13 @@
 using Game.API.Attributes;
 using Game.Contracts.Player;
-using Game.Core.Services.Player.GetAll;
+using Game.Core.Services.Players.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-[Authorize(Roles = "Admin"), Fingerprinting]
+// [Authorize(Roles = "Admin"), Fingerprinting]
 [Route("api/[controller]"), ApiController]
 public class PlayerController : ControllerBase
 {

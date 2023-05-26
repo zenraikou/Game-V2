@@ -1,6 +1,6 @@
 namespace Game.Core.Common.Interfaces.Persistence;
 
-public interface IUnitOfWork : IAsyncDisposable
+public interface IUnitOfWork
 {
     ISessionRepository Sessions { get; }
     IPlayerRepository Players { get; }

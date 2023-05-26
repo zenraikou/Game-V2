@@ -39,11 +39,13 @@ public class AuthenticationService : IAuthenticationService
         };
 
         await _unitOfWork.Players.Post(player);
+        await _unitOfWork.Save();
 
         var jwt = _jwtService.GenerateJWT(player);
         var session = _jwtService.GenerateSession(jwt);
 
         await _unitOfWork.Sessions.Post(session);
+        await _unitOfWork.Save();
 
         var response = new AuthenticationResponse { JWT = jwt };
         return response;
@@ -52,12 +54,16 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthenticationResponse?> Login(LoginRequest request)
     {
         var user = await _unitOfWork.Players.Get(u => u.UniqueName == request.UniqueName);
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) throw new BadRequestException("Invalid credentials.");
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        {
+            throw new BadRequestException("Invalid credentials.");
+        }
 
         var jwt = _jwtService.GenerateJWT(user);
         var session = _jwtService.GenerateSession(jwt);
 
-        await _unitOfWork.Sessions.Update(session);
+        await _unitOfWork.Sessions.Post(session);
+        await _unitOfWork.Save();
 
         var response = new AuthenticationResponse { JWT = jwt };
         return (response);
@@ -66,11 +72,18 @@ public class AuthenticationService : IAuthenticationService
     public async Task Logout()
     {
         var jti = _playerClaimService.GetPlayerClaim(c => c.Type == "jti");
-        if (jti is null) throw new UnauthorizedException("Invalid access.");
+        if (jti is null)
+        {
+            throw new UnauthorizedException("Invalid access.");
+        }
 
         var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
-        if (session is null) throw new UnauthorizedException("Invalid access.");
+        if (session is null)
+        {
+            throw new UnauthorizedException("Invalid access.");
+        }
 
         await _unitOfWork.Sessions.Delete(session);
+        await _unitOfWork.Save();
     }
 }

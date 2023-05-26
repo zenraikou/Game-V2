@@ -51,7 +51,10 @@ public class JWTService : IJWTService
         var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
 
-        if (fingerprint is null) throw new Exception("Fingerprint is null.");
+        if (fingerprint is null)
+        {
+            throw new Exception("Fingerprint is null.");
+        }
 
         var session = new Session
         {

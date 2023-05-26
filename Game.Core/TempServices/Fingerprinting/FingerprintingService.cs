@@ -8,12 +8,12 @@ namespace Game.Core.TempServices.Fingerprinting;
 public class FingerprintingService : IFingerprintingService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ISessionRepository _sessionRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public FingerprintingService(IHttpContextAccessor httpContextAccessor, ISessionRepository sessionRepository)
+    public FingerprintingService(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
     {
         _httpContextAccessor = httpContextAccessor;
-        _sessionRepository = sessionRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Validate()
@@ -35,13 +35,11 @@ public class FingerprintingService : IFingerprintingService
 
         var token = handler.ReadJwtToken(jwt);
         var jti = token.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-        var session = await _sessionRepository.Get(s => s.JTI == jti);
+        var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
 
         if (session is null || !session.Fingerprint.Equals(fingerprint))
         {
             throw new UnauthorizedException("Invalid credentials.");
         }
-
-        await Task.CompletedTask;
     }
 }
