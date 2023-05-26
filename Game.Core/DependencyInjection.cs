@@ -9,6 +9,7 @@ using Game.Core.TempServices.PlayerClaim;
 using Game.Infrastructure.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MapsterMapper;
 
 namespace Game.Core;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
+        services.AddSingleton<IMapper, Mapper>();
         
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();

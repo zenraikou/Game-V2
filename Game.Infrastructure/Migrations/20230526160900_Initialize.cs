@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Game.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initialize : Migration
+    public partial class Initialize : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,10 +50,10 @@ namespace Game.Infrastructure.Migrations
                 columns: new[] { "Id", "CreationStamp", "Email", "Handle", "Name", "PasswordHash", "Role", "UniqueName" },
                 values: new object[,]
                 {
-                    { new Guid("6994ed90-de07-4b48-aab9-35ba7a993242"), new DateTime(2023, 5, 25, 10, 5, 56, 385, DateTimeKind.Utc).AddTicks(1765), "kazuma@konosuba.gg", "kazuma", "Kazuma", "$2a$11$OuK6MmyqyBfB07LgbhUtM.92LjB/X6ZYjOigtVpCOzuX8.t6mHI6K", 1, "kazuma" },
-                    { new Guid("848473bf-884d-4681-86fb-a1ca3ef7f8f7"), new DateTime(2023, 5, 25, 10, 5, 56, 867, DateTimeKind.Utc).AddTicks(7135), "aqua@konosuba.gg", "aqua", "Aqua", "$2a$11$GyRI3UWjZDzthpMGIE0B4.kCfXkqDHXIGZwi8/TQcWqKsYErYksLa", 1, "aqua" },
-                    { new Guid("b01740c0-8ce8-4bef-ac8f-2d244084772b"), new DateTime(2023, 5, 25, 10, 5, 57, 891, DateTimeKind.Utc).AddTicks(8476), "darkness@konosuba.gg", "darkness", "Darkness", "$2a$11$OyioTJLxr8fa8i5Tcgm6XOXmSUasRV3jSb1CcB/BtrW7YZ7xmrlF6", 1, "darkness" },
-                    { new Guid("bcb0c1f7-1431-4a35-b582-86ed9b0fbac7"), new DateTime(2023, 5, 25, 10, 5, 57, 386, DateTimeKind.Utc).AddTicks(376), "megumin@konosuba.gg", "megumin", "Megumin", "$2a$11$5e34uy3KfODp38oyvYg/Auj63o/wAGFWbYZ0zDITmwkkIRASpNsAO", 1, "megumin" }
+                    { new Guid("2d7a604f-5b2e-49b1-a5af-2a05772ad823"), new DateTime(2023, 5, 26, 16, 8, 59, 299, DateTimeKind.Utc).AddTicks(3729), "megumin@konosuba.gg", "megumin", "Megumin", "$2a$11$7n57nZGS3CeL6U7aTKHE0e7vcX0BG4WxpHFNDk0PWS9DxIxrm/BPS", 1, "megumin" },
+                    { new Guid("2f19c652-8a18-4980-950f-0222d1dbe301"), new DateTime(2023, 5, 26, 16, 8, 59, 790, DateTimeKind.Utc).AddTicks(4016), "darkness@konosuba.gg", "darkness", "Darkness", "$2a$11$uMX8rpWZJ/.YryYt8MY..e3FiPHgn120GhtHEReCxEA0brkybhmlK", 1, "darkness" },
+                    { new Guid("a08c82e1-9fe3-478f-8ace-c88fed14ee71"), new DateTime(2023, 5, 26, 16, 8, 58, 819, DateTimeKind.Utc).AddTicks(5142), "aqua@konosuba.gg", "aqua", "Aqua", "$2a$11$Ic1lVC.SwCxoO1c.4LdyOOTw5/g025W8M2pdqXEF.Y3BMGjMxIULW", 1, "aqua" },
+                    { new Guid("b2b92e20-bc64-431b-98d1-c5b41c9d7396"), new DateTime(2023, 5, 26, 16, 8, 58, 334, DateTimeKind.Utc).AddTicks(4153), "kazuma@konosuba.gg", "kazuma", "Kazuma", "$2a$11$dcPkpp7cHUMXof5wkx5o4OdK/wpGoRYHNBRvFK3x6Her1bKGq9n0a", 1, "kazuma" }
                 });
         }
 
