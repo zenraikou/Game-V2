@@ -21,7 +21,8 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerCommand, PlayerRe
     {
         var player = _mapper.Map<Player>(request.Player);
         await _unitOfWork.Players.Update(player);
+        await _unitOfWork.Save();
         var response = _mapper.Map<PlayerResponse>(player);
-        return await Task.FromResult(response);
+        return response;
     }
 }
