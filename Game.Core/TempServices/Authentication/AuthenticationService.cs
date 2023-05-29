@@ -22,18 +22,18 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<AuthenticationResponse?> Register(RegisterRequest request)
     {
-        var player = await _unitOfWork.Players.Get(u => u.UniqueName == request.UniqueName);
+        var player = await _unitOfWork.Players.Get(u => u.UniqueName == request.Player.UniqueName);
         if (player is not null) throw new BadRequestException("ID already taken.");
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-        var role = (Role)Enum.Parse(typeof(Role), request.Role.Substring(0, 1).ToUpper() + request.Role.Substring(1).ToLower());
+        var role = (Role)Enum.Parse(typeof(Role), request.Player.Role.Substring(0, 1).ToUpper() + request.Player.Role.Substring(1).ToLower());
 
         player = new Player
         {
-            Handle = request.Handle,
-            Name = request.Name,
-            UniqueName = request.UniqueName,
-            Email = request.Email,
+            Handle = request.Player.Handle,
+            Name = request.Player.Name,
+            UniqueName = request.Player.UniqueName,
+            Email = request.Player.Email,
             PasswordHash = passwordHash,
             Role = role
         };

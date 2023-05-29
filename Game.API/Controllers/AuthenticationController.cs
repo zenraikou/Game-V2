@@ -1,6 +1,8 @@
 using Game.API.Attributes;
 using Game.Contracts.Authentication;
+using Game.Core.Services.Authentication.Register;
 using Game.Core.TempServices.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -10,10 +12,12 @@ namespace Game.API.Controllers;
 [Route("api/auth")]
 public class AuthenticationController : ControllerBase
 {
+    private readonly IMediator _mediator;
     private readonly IAuthenticationService _authenticationService;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthenticationController(IMediator mediator, IAuthenticationService authenticationService)
     {
+        _mediator = mediator;
         _authenticationService = authenticationService;
     }
 
@@ -22,7 +26,8 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
     {
-        var response = await _authenticationService.Register(request);
+        var registerCommand = new RegisterCommand(request);
+        var response = await _mediator.Send(registerCommand);
         return Ok(response);
     }
 

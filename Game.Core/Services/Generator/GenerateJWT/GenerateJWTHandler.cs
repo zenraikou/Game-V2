@@ -1,34 +1,35 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Game.Contracts.Generator.GenerateJWT;
 using Game.Core.Common.Settings;
 using Game.Core.TempServices.Time;
+using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Game.Core.Services.JWT.GenerateJWT;
+namespace Game.Core.Services.Generator.GenerateJWT;
 
-public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, string>
+public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJWTResponse>
 {
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IMapper _mapper;
 
-    public GenerateJWTHandler(ITime time, IOptions<JWTSettings> jwtSettings, IHttpContextAccessor httpContextAccessor)
+    public GenerateJWTHandler(ITime time, IOptions<JWTSettings> jwtSettings, IMapper mapper)
     {
         _time = time;
         _jwtSettings = jwtSettings.Value;
-        _httpContextAccessor = httpContextAccessor;
+        _mapper = mapper;
     }
 
-    public async Task<string> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
+    public async Task<GenerateJWTResponse> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
     {
         var claims = new Claim[]
         {
-            new Claim("id", request.Player.Id.ToString()),
-            new Claim("role", request.Player.Role),
+            new Claim("id", request.JWT.Player.Id.ToString()),
+            new Claim("role", request.JWT.Player.Role),
             new Claim("jti", Guid.NewGuid().ToString())
         };
 
@@ -43,6 +44,8 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, string>
             expires: _time.Now.AddMinutes(_jwtSettings.Expiry));
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
-        return await Task.FromResult(jwt);
+
+        var response = _mapper.Map<GenerateJWTResponse>(jwt);
+        return await Task.FromResult(response);
     }
 }

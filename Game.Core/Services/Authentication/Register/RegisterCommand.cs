@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Game.Core.Services.Authentication.Register;
 
-public record RegisterCommand(RegisterRequest User) : IRequest<RegisterRequest>;
+public record RegisterCommand(RegisterRequest Register) : IRequest<AuthenticationResponse>;
