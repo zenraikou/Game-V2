@@ -10,6 +10,7 @@ using Game.Infrastructure.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MapsterMapper;
+using Game.Core.Extensions;
 
 namespace Game.Core;
 
@@ -19,15 +20,15 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
-        services.AddSingleton<IMapper, Mapper>();
+        services.AddMappings();
         
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();
         services.AddSingleton<IJWTService, JWTService>();
         services.AddScoped<IPlayerClaimService, PlayerClaimService>();
         services.AddHttpContextAccessor();
-        services.AddScoped<IFingerprintingService, FingerprintingService>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IFingerprintingService, FingerprintingService>(); // temporary
+        services.AddScoped<IAuthenticationService, AuthenticationService>(); // temporary
 
         return services;
     }

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Game.Core.Services.Players.Get;
 
-public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse>
+public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, Player?>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -19,17 +19,8 @@ public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse>
         _mapper = mapper;
     }
 
-    public async Task<PlayerResponse> Handle(GetPlayerQuery request, CancellationToken cancellationToken)
+    public async Task<Player?> Handle(GetPlayerQuery request, CancellationToken cancellationToken)
     {
-        var expression = _mapper.Map<Expression<Func<Player, bool>>>(request.Expression);
-        var player = await _unitOfWork.Players.Get(expression);
-
-        if (player is null)
-        {
-            throw new NotFoundException("Player not found.");
-        }
-
-        var response = _mapper.Map<PlayerResponse>(player);
-        return response;
+        return await _unitOfWork.Players.Get(request.Expression);
     }
 }

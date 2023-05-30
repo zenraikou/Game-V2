@@ -28,18 +28,17 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
 
     public async Task<AuthenticationResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.Player.UniqueName);
-        var playerResponse = await _mediator.Send(getPlayerQuery);
+        var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
+        var player = await _mediator.Send(getPlayerQuery);
 
-        if (playerResponse is not null)
+        if (player is not null)
         {
             throw new BadRequestException("ID is not available.");
         }
 
-        request.Register.Player.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Register.Password);
-        playerResponse = _mapper.Map<PlayerResponse>(request.Register.Player); // GUID here is empty or all zero
+        request.Register.Password = BCrypt.Net.BCrypt.HashPassword(request.Register.Password);
+        player = _mapper.Map<Player>(request.Register);
 
-        var player = _mapper.Map<Player>(playerResponse); // GUID here is not empty
         await _unitOfWork.Players.Post(player);
         await _unitOfWork.Save();
 

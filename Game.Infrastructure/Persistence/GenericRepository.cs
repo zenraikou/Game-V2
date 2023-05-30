@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         db = _context.Set<T>();
     }
 
-    public async Task<IEnumerable<T>> GetAll(System.Linq.Expressions.Expression<Func<T, bool>>? expression)
+    public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? expression)
     {
         IQueryable<T> query = db.AsQueryable();
 
@@ -27,7 +28,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await query.AsNoTracking().ToListAsync();
     }
 
-    public async Task<T?> Get(System.Linq.Expressions.Expression<Func<T, bool>> expression)
+    public async Task<T?> Get(Expression<Func<T, bool>> expression)
     {
         IQueryable<T> query = db.AsQueryable();
         return await query.AsNoTracking().FirstOrDefaultAsync(expression);
