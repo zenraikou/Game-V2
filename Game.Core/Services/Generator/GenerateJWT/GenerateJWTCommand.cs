@@ -1,6 +1,6 @@
-using Game.Contracts.Generator.GenerateJWT;
+using Game.Domain.Entities;
 using MediatR;
 
 namespace Game.Core.Services.Generator.GenerateJWT;
 
-public record GenerateJWTCommand(GenerateJWTRequest JWT) : IRequest<GenerateJWTResponse>;
+public record GenerateJWTCommand(Player Player) : IRequest<string>;

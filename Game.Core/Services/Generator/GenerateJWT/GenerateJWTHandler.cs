@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Game.Contracts.Generator.GenerateJWT;
 using Game.Core.Common.Settings;
 using Game.Core.TempServices.Time;
 using MapsterMapper;
@@ -11,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Game.Core.Services.Generator.GenerateJWT;
 
-public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJWTResponse>
+public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, string>
 {
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
@@ -24,12 +23,12 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJW
         _mapper = mapper;
     }
 
-    public async Task<GenerateJWTResponse> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
     {
         var claims = new Claim[]
         {
-            new Claim("id", request.JWT.Player.Id.ToString()),
-            new Claim("role", request.JWT.Player.Role),
+            new Claim("id", request.Player.Id.ToString()),
+            new Claim("role", request.Player.Role.ToString()),
             new Claim("jti", Guid.NewGuid().ToString())
         };
 
@@ -45,7 +44,7 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJW
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
 
-        var response = _mapper.Map<GenerateJWTResponse>(jwt);
-        return await Task.FromResult(response);
+        // var response = _mapper.Map<GenerateJWTResponse>(jwt);
+        return await Task.FromResult(jwt);
     }
 }

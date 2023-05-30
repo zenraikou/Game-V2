@@ -1,9 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
-using Game.Contracts.Generator.GenerateSession;
-using Game.Contracts.Session;
 using Game.Core.Common.Settings;
 using Game.Core.Exceptions;
 using Game.Core.TempServices.Time;
+using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Game.Core.Services.Generator.GenerateSession;
 
-public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, GenerateSessionResponse>
+public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Session>
 {
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
@@ -30,9 +29,9 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Ge
         _mapper = mapper;
     }
 
-    public async Task<GenerateSessionResponse> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
+    public async Task<Session> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
     {
-        var jti = new JwtSecurityTokenHandler().ReadJwtToken(request.GenerateSession.JWT).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
+        var jti = new JwtSecurityTokenHandler().ReadJwtToken(request.JWT).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
 
         if (fingerprint is null)
@@ -40,14 +39,14 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Ge
             throw new UnauthorizedException("Access denied.");
         }
 
-        var sessionResponse = new SessionResponse
+        var session = new Session
         {
             JTI = jti,
             Fingerprint = fingerprint,
             Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };
 
-        var response = _mapper.Map<GenerateSessionResponse>(sessionResponse);
-        return await Task.FromResult(response);
+        // var response = _mapper.Map<GenerateSessionResponse>(sessionResponse);
+        return await Task.FromResult(session);
     }
 }
