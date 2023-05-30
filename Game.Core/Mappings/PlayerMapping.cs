@@ -1,10 +1,8 @@
-using System.Linq.Expressions;
 using Game.Contracts.Authentication;
+using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Player;
-using Game.Core.Services.Players.Get;
 using Game.Domain.Entities;
 using Mapster;
-using Mapster.Models;
 
 namespace Game.Core.Mappings;
 
@@ -17,5 +15,7 @@ public class PlayerMapping : IRegister
 
         config.NewConfig<RegisterRequest, Player>().Ignore("Id");
         config.NewConfig<RegisterRequest, Player>().Map(dest => dest.PasswordHash, src => src.Password);
+
+        config.ForType<Player, GenerateJWTRequest>().Map(dest => dest.Id, src => src.Id);
     }
 }

@@ -10,7 +10,7 @@ Fingerprint: Browser
 {
     "handle": "eris",
     "name": "Eris",
-    "uniqueName": "eris",
+    "uniqueName": "eris8",
     "email": "eris@konosuba.gg",
     "password": "?Ok4",
     "role": "Admin"

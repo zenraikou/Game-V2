@@ -1,4 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
+using Game.Contracts.Generator.GenerateSession;
+using Game.Contracts.Session;
 using Game.Core.Common.Settings;
 using Game.Core.Exceptions;
 using Game.Core.TempServices.Time;
@@ -10,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Game.Core.Services.Generator.GenerateSession;
 
-public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Session>
+public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, GenerateSessionResponse>
 {
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
@@ -29,9 +31,9 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Se
         _mapper = mapper;
     }
 
-    public async Task<Session> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
+    public async Task<GenerateSessionResponse> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
     {
-        var jti = new JwtSecurityTokenHandler().ReadJwtToken(request.JWT).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
+        var jti = new JwtSecurityTokenHandler().ReadJwtToken(request.GenerateSession.JWT).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
 
         if (fingerprint is null)
@@ -39,14 +41,14 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Se
             throw new UnauthorizedException("Access denied.");
         }
 
-        var session = new Session
+        var sessionResponse = new SessionResponse
         {
             JTI = jti,
             Fingerprint = fingerprint,
             Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };
 
-        // var response = _mapper.Map<GenerateSessionResponse>(sessionResponse);
-        return await Task.FromResult(session);
+        var response = _mapper.Map<GenerateSessionResponse>(sessionResponse);
+        return await Task.FromResult(response);
     }
 }
