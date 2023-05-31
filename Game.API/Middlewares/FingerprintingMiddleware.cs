@@ -1,42 +1,45 @@
 using Game.API.Attributes;
 using Game.Core.Exceptions;
-using Game.Core.TempServices.Fingerprinting;
+using Game.Core.Services.Fingerprinting;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Game.API.Middlewares;
 
 public class FingerprintingMiddleware : IMiddleware
 {
-    private readonly IFingerprintingService _fingerprintingService;
     private readonly ILogger<FingerprintingMiddleware> _logger;
+    private readonly IMediator _mediator;
 
-    public FingerprintingMiddleware(IFingerprintingService fingerprintingService, ILogger<FingerprintingMiddleware> logger)
+    public FingerprintingMiddleware(ILogger<FingerprintingMiddleware> logger, IMediator mediator)
     {
-        _fingerprintingService = fingerprintingService;
         _logger = logger;
+        _mediator = mediator;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var endpoint = context.GetEndpoint();
-        var fingerprint = context.Request.Headers["Fingerprint"].ToString();
+        var authorize = EndpointHasAttribute<AuthorizeAttribute>(context);
+        var fingerprinting = EndpointHasAttribute<FingerprintingAttribute>(context);
+        var noFingerprinting = EndpointHasAttribute<NoFingerprintingAttribute>(context);
 
-        var authorize = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>() is not null;
-        var fingerprinting = endpoint?.Metadata.GetMetadata<FingerprintingAttribute>() is not null;
-        var noFingerprinting = endpoint?.Metadata.GetMetadata<NoFingerprintingAttribute>() is not null;
-
-        if (noFingerprinting is false)
+        if (noFingerprinting)
         {
-            if (fingerprinting && fingerprint is null) throw new UnauthorizedException("Fingerprint is required.");
+            fingerprinting = false;
         }
 
-        if (authorize)
+        if (authorize && fingerprinting)
         {
-            await _fingerprintingService.Validate();
+            var fingerprintingCommand = new FingerprintingCommand();
+            await _mediator.Send(fingerprintingCommand);
         }
 
-        _logger.LogInformation($"Authorization Header Required: {authorize}"); // temporary
-        _logger.LogInformation($"Fingerprint Header Is Required: {!noFingerprinting}"); // temporary
         await next(context);
+    }
+
+    public bool EndpointHasAttribute<T>(HttpContext context) where T : class
+    {
+        var endpoint = context.GetEndpoint();
+        return endpoint?.Metadata.GetMetadata<T>() is not null;
     }
 }
