@@ -6,8 +6,8 @@ namespace Game.Infrastructure.Persistence;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly GameDBContext _context;
-    public IPlayerRepository Players { get; private set; }
     public ISessionRepository Sessions { get; private set; }
+    public IPlayerRepository Players { get; private set; }
 
     public UnitOfWork(GameDBContext context)
     {

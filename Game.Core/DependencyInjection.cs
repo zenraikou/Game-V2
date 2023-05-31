@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MapsterMapper;
 using Game.Core.Extensions;
+using Game.Core.Common.Interfaces.Persistence;
 
 namespace Game.Core;
 

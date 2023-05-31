@@ -1,7 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using Game.API.Attributes;
-using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Services.Sessions.Get;
 using Game.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,11 @@ namespace Game.API.Controllers;
 [Route("api/[controller]")]
 public class TestController : ControllerBase
 {
-    private readonly ISessionRepository _sessionRepository;
+    private readonly IMediator _mediator;
 
-    public TestController(ISessionRepository sessionRepository)
+    public TestController(IMediator mediator)
     {
-        _sessionRepository = sessionRepository;
+        _mediator = mediator;
     }
 
     [HttpGet("greetings")]
@@ -32,7 +33,9 @@ public class TestController : ControllerBase
     {
         var jwt = Request.Headers["Authorization"].ToString().Split(' ')[1];
         var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")!.Value;
-        var session = await _sessionRepository.Get(s => s.JTI == jti);
+
+        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
+        var session = await _mediator.Send(getSessionQuery);
 
         if (session is null)
         {
