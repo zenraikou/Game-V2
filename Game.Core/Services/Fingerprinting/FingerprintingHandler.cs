@@ -30,7 +30,6 @@ public class FingerprintingHandler : IRequestHandler<FingerprintingCommand, Unit
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(jwt);
         var jti = token.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-
         var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
 
         if (session is null || !session.Fingerprint.Equals(fingerprint))
