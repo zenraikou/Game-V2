@@ -1,7 +1,8 @@
 using Game.API.Attributes;
 using Game.Contracts.Authentication;
+using Game.Core.Services.Authentication.Login;
+using Game.Core.Services.Authentication.Logout;
 using Game.Core.Services.Authentication.Register;
-using Game.Core.TempServices.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,12 +14,10 @@ namespace Game.API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IAuthenticationService _authenticationService;
 
-    public AuthenticationController(IMediator mediator, IAuthenticationService authenticationService)
+    public AuthenticationController(IMediator mediator)
     {
         _mediator = mediator;
-        _authenticationService = authenticationService;
     }
 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,7 +35,8 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
     {
-        var response = await _authenticationService.Login(request);
+        var loginCommand = new LoginCommand(request);
+        var response = await _mediator.Send(loginCommand);
         return Ok(response);
     }
 
@@ -45,7 +45,8 @@ public class AuthenticationController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _authenticationService.Logout();
+        var logoutCommand = new LogoutCommand();
+        await _mediator.Send(logoutCommand);
         return Ok();
     }
 }

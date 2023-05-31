@@ -1,17 +1,10 @@
 using FluentValidation;
 using Game.Core.Common.Settings;
-using Game.Core.TempServices.Authentication;
-using Game.Core.TempServices.Fingerprinting;
-using Game.Core.TempServices.Time;
-using Game.Core.TempServices.TIme;
-using Game.Core.TempServices.JWT;
-using Game.Core.TempServices.PlayerClaim;
-using Game.Infrastructure.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MapsterMapper;
 using Game.Core.Extensions;
-using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Common.Interfaces.Time;
+using Game.Core.Common.Time;
 
 namespace Game.Core;
 
@@ -25,11 +18,7 @@ public static class DependencyInjection
         
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();
-        services.AddSingleton<IJWTService, JWTService>();
-        services.AddScoped<IPlayerClaimService, PlayerClaimService>();
         services.AddHttpContextAccessor();
-        services.AddScoped<IFingerprintingService, FingerprintingService>(); // temporary
-        services.AddScoped<IAuthenticationService, AuthenticationService>(); // temporary
 
         return services;
     }

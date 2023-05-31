@@ -1,10 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using Game.Contracts.Generator.GenerateSession;
 using Game.Contracts.Session;
+using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Settings;
 using Game.Core.Exceptions;
-using Game.Core.TempServices.Time;
-using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Get;
 using MediatR;
