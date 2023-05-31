@@ -22,7 +22,7 @@ public class FingerprintingHandler : IRequestHandler<FingerprintingCommand, Unit
         var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
 
-        if (jwt is null || fingerprint is null)
+        if (string.IsNullOrEmpty(jwt) || string.IsNullOrEmpty(fingerprint))
         {
             throw new UnauthorizedException("Access denied.");
         }
