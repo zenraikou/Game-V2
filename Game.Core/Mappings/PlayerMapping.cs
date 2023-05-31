@@ -1,5 +1,3 @@
-using Game.Contracts.Authentication;
-using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Player;
 using Game.Domain.Entities;
 using Mapster;
@@ -10,12 +8,10 @@ public class PlayerMapping : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<PlayerRequest, Player>().Ignore("Id");
-        config.NewConfig<PlayerRequest, Player>().Map(dest => dest.PasswordHash, src => src.Password);
+        config.ForDestinationType<Player>()
+            .Ignore(dest => dest.Id);
 
-        config.NewConfig<RegisterRequest, Player>().Ignore("Id");
-        config.NewConfig<RegisterRequest, Player>().Map(dest => dest.PasswordHash, src => src.Password);
-
-        config.ForType<Player, GenerateJWTRequest>().Map(dest => dest.Id, src => src.Id);
+        config.NewConfig<PlayerRequest, Player>()
+            .Map(dest => dest.PasswordHash, src => src.Password);
     }
 }
