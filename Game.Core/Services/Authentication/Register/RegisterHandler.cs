@@ -1,12 +1,14 @@
 using Game.Contracts.Authentication;
 using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Generator.GenerateSession;
-using Game.Core.Common.Interfaces.Persistence;
+using Game.Contracts.Player;
+using Game.Contracts.Session;
 using Game.Core.Exceptions;
 using Game.Core.Services.Generator.GenerateJWT;
 using Game.Core.Services.Generator.GenerateSession;
 using Game.Core.Services.Players.Get;
-using Game.Domain.Entities;
+using Game.Core.Services.Players.Post;
+using Game.Core.Services.Sessions.Post;
 using MapsterMapper;
 using MediatR;
 
@@ -14,15 +16,13 @@ namespace Game.Core.Services.Authentication.Register;
 
 public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationResponse>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
     private readonly IMediator _mediator;
+    private readonly IMapper _mapper;
 
-    public RegisterHandler(IUnitOfWork unitOfWork, IMapper mapper, IMediator mediator)
+    public RegisterHandler(IMediator mediator, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     public async Task<AuthenticationResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -37,21 +37,21 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
 
         request.Register.Password = BCrypt.Net.BCrypt.HashPassword(request.Register.Password);
 
-        player = _mapper.Map<Player>(request.Register);
-        await _unitOfWork.Players.Post(player);
-        await _unitOfWork.Save();
+        var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
+        var postPlayerCommand = new PostPlayerCommand(playerRequest);
+        var playerResponse = await _mediator.Send(postPlayerCommand);
 
-        var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(player);
+        var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
         var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
         var generateJWTResponse = await _mediator.Send(generateJWTCommand);
 
         var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
         var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-        var sessionResponse = await _mediator.Send(generateSessionCommand);
+        var generateSessionResponse = await _mediator.Send(generateSessionCommand);
 
-        var session = _mapper.Map<Session>(sessionResponse);
-        await _unitOfWork.Sessions.Post(session);
-        await _unitOfWork.Save();
+        var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        var postSessionCommand = new PostSessionCommand(sessionRequest);
+        await _mediator.Send(postSessionCommand);
 
         var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
         return response;
