@@ -8,12 +8,10 @@ public class ExpressionMapper : IExpressionMapper
 {
     public Expression<Func<TDestination, bool>> MapExpression<TSource, TDestination>(Expression<Func<TSource, bool>> expression)
     {
-        var parameter = Expression.Parameter(typeof(TDestination), "destination");
-        var visitor = new ReplaceVisitor<TDestination>(expression.Parameters[0], parameter);
+        var destinationParameter = Expression.Parameter(typeof(TDestination), "destination");
+        var visitor = new ReplaceVisitor<TDestination>(expression.Parameters[0], destinationParameter);
         var mappedExpressionBody = visitor.Visit(expression.Body);
-
-        var mappedExpression = Expression.Lambda<Func<TDestination, bool>>(mappedExpressionBody, parameter);
-
+        var mappedExpression = Expression.Lambda<Func<TDestination, bool>>(mappedExpressionBody, destinationParameter);
         return mappedExpression;
     }
 
@@ -32,7 +30,7 @@ public class ExpressionMapper : IExpressionMapper
         {
             if (node.Expression == _sourceParameter)
             {
-                var memberInfo = GetMemberInfo<TDestination>(node.Member.Name);
+                var memberInfo = GetDestinationMember(node.Member.Name);
                 var memberExpression = Expression.MakeMemberAccess(_destinationParameter, memberInfo);
                 return memberExpression;
             }
@@ -40,9 +38,10 @@ public class ExpressionMapper : IExpressionMapper
             return base.VisitMember(node);
         }
 
-        private MemberInfo GetMemberInfo<T>(string memberName)
+        private MemberInfo GetDestinationMember(string memberName)
         {
-            var memberInfo = typeof(T).GetMember(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var destinationType = typeof(TDestination);
+            var memberInfo = destinationType.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             return memberInfo[0];
         }
     }

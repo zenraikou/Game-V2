@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
+using Game.Contracts.Player;
 using Game.Contracts.Session;
+using Game.Core.Common.Interfaces.ExpressionMapper;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Domain.Entities;
 using MapsterMapper;
@@ -11,16 +13,18 @@ public class GetAllSessionsHandler : IRequestHandler<GetAllSessionsQuery, IEnume
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IExpressionMapper _expressionMapper;
 
-    public GetAllSessionsHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetAllSessionsHandler(IUnitOfWork unitOfWork, IMapper mapper, IExpressionMapper expressionMapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _expressionMapper = expressionMapper;
     }
 
     public async Task<IEnumerable<SessionResponse>> Handle(GetAllSessionsQuery request, CancellationToken cancellationToken)
     {
-        var expression = _mapper.Map<Expression<Func<Session, bool>>>(request.Expression!);
+        var expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression!);
         var sessions = await _unitOfWork.Sessions.GetAll(expression);
         var response = _mapper.Map<IEnumerable<SessionResponse>>(sessions);
         return response;
