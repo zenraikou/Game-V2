@@ -14,35 +14,35 @@ public class ExpressionMapper : IExpressionMapper
         var mappedExpression = Expression.Lambda<Func<TDestination, bool>>(mappedExpressionBody, destinationParameter);
         return mappedExpression;
     }
+}
 
-    private class ReplaceVisitor<TDestination> : ExpressionVisitor
+public class ReplaceVisitor<TDestination> : ExpressionVisitor
+{
+    private readonly ParameterExpression _sourceParameter;
+    private readonly ParameterExpression _destinationParameter;
+
+    public ReplaceVisitor(ParameterExpression sourceParameter, ParameterExpression destinationParameter)
     {
-        private readonly ParameterExpression _sourceParameter;
-        private readonly ParameterExpression _destinationParameter;
+        _sourceParameter = sourceParameter;
+        _destinationParameter = destinationParameter;
+    }
 
-        public ReplaceVisitor(ParameterExpression sourceParameter, ParameterExpression destinationParameter)
+    protected override Expression VisitMember(MemberExpression node)
+    {
+        if (node.Expression == _sourceParameter)
         {
-            _sourceParameter = sourceParameter;
-            _destinationParameter = destinationParameter;
+            var memberInfo = GetDestinationMember(node.Member.Name);
+            var memberExpression = Expression.MakeMemberAccess(_destinationParameter, memberInfo);
+            return memberExpression;
         }
 
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            if (node.Expression == _sourceParameter)
-            {
-                var memberInfo = GetDestinationMember(node.Member.Name);
-                var memberExpression = Expression.MakeMemberAccess(_destinationParameter, memberInfo);
-                return memberExpression;
-            }
+        return base.VisitMember(node);
+    }
 
-            return base.VisitMember(node);
-        }
-
-        private MemberInfo GetDestinationMember(string memberName)
-        {
-            var destinationType = typeof(TDestination);
-            var memberInfo = destinationType.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            return memberInfo[0];
-        }
+    private MemberInfo GetDestinationMember(string memberName)
+    {
+        var destinationType = typeof(TDestination);
+        var memberInfo = destinationType.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return memberInfo[0];
     }
 }
