@@ -4,7 +4,7 @@ using Mapster;
 
 namespace Game.Core.Mappings;
 
-public class PlayerMapping : IRegister
+public class PlayerMapper : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {

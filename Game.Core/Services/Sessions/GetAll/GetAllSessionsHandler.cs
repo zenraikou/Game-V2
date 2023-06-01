@@ -1,5 +1,5 @@
 using Game.Contracts.Session;
-using Game.Core.Common.Interfaces.ExpressionMapper;
+using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Domain.Entities;
 using MapsterMapper;

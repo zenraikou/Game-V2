@@ -3,10 +3,10 @@ using Game.Core.Common.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Game.Core.Extensions;
+using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Time;
-using Game.Core.Common.Interfaces.ExpressionMapper;
-using Game.Core.Mappings;
+using Game.Core.Mappers;
 
 namespace Game.Core;
 
@@ -16,7 +16,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
-        services.AddMappings();
+        services.AddMappers();
 
         services.AddSingleton<IExpressionMapper, ExpressionMapper>();
         

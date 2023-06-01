@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Game.Core.Common.Interfaces.ExpressionMapper;
+using Game.Core.Common.Interfaces.Mappers;
 
-namespace Game.Core.Mappings;
+namespace Game.Core.Mappers;
 
 public class ExpressionMapper : IExpressionMapper
 {

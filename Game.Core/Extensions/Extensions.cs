@@ -7,7 +7,7 @@ namespace Game.Core.Extensions;
 
 public static class Extensions
 {
-    public static IServiceCollection AddMappings(this IServiceCollection services)
+    public static IServiceCollection AddMappers(this IServiceCollection services)
     {
         var config = TypeAdapterConfig.GlobalSettings;
         config.Scan(Assembly.GetExecutingAssembly());

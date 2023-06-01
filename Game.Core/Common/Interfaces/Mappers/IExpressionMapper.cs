@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Game.Core.Common.Interfaces.ExpressionMapper;
+namespace Game.Core.Common.Interfaces.Mappers;
 
 public interface IExpressionMapper
 {
