@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Game.Core.Extensions;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Time;
+using Game.Core.Common.Interfaces.ExpressionMapper;
+using Game.Core.Mappings;
 
 namespace Game.Core;
 
@@ -15,6 +17,8 @@ public static class DependencyInjection
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
         services.AddMappings();
+
+        services.AddSingleton<IExpressionMapper, ExpressionMapper>();
         
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();

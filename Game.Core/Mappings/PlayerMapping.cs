@@ -13,5 +13,8 @@ public class PlayerMapping : IRegister
 
         config.NewConfig<PlayerRequest, Player>()
             .Map(dest => dest.PasswordHash, src => src.Password);
+
+        config.NewConfig<PlayerRequest, PlayerResponse>()
+            .Map(dest => dest.PasswordHash, src => src.Password);
     }
 }

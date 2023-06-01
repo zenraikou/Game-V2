@@ -16,10 +16,10 @@ namespace Game.Core.Services.Authentication.Register;
 
 public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationResponse>
 {
-    private readonly IMediator _mediator;
+    private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
-    public RegisterHandler(IMediator mediator, IMapper mapper)
+    public RegisterHandler(ISender mediator, IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
@@ -28,9 +28,9 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
     public async Task<AuthenticationResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
-        var player = await _mediator.Send(getPlayerQuery);
+        var playerResponse = await _mediator.Send(getPlayerQuery);
 
-        if (player is not null)
+        if (playerResponse is not null)
         {
             throw new BadRequestException("ID is not available.");
         }
@@ -39,7 +39,7 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
 
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
         var postPlayerCommand = new PostPlayerCommand(playerRequest);
-        var playerResponse = await _mediator.Send(postPlayerCommand);
+        playerResponse = await _mediator.Send(postPlayerCommand);
 
         var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
         var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
