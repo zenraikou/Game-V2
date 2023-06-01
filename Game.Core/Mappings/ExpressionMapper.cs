@@ -28,11 +28,6 @@ public class ExpressionMapper : IExpressionMapper
             _destinationParameter = destinationParameter;
         }
 
-        // protected override Expression VisitParameter(ParameterExpression node)
-        // {
-        //     return _destinationParameter;
-        // }
-
         protected override Expression VisitMember(MemberExpression node)
         {
             if (node.Expression == _sourceParameter)
