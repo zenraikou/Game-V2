@@ -45,6 +45,6 @@ public class FingerprintingHandler : IRequestHandler<FingerprintingCommand, Unit
             throw new UnauthorizedException("Access denied.");
         }
 
-        return Unit.Value;
+        return await Unit.Task;
     }
 }

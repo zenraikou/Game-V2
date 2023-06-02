@@ -14,5 +14,9 @@ public class GameDBContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Seed();
+
+        // temporarily on database
+        // remove session from database later and use Redis to store or cache sessions on RAM
+        modelBuilder.Entity<Session>().HasKey(s => s.JTI);
     }
 }

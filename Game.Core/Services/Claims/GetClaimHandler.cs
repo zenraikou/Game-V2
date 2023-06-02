@@ -16,10 +16,13 @@ public class GetClaimHandler : IRequestHandler<GetClaimCommand, string>
 
     public async Task<string> Handle(GetClaimCommand request, CancellationToken cancellationToken)
     {
-        var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
-        var claim = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+        var context = _httpContextAccessor.HttpContext;
+        var jwt = context?.Request.Headers["Authorization"].ToString().Split(' ')[1];
 
-        if (claim is null)
+        var handler = new JwtSecurityTokenHandler();
+        var claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+
+        if (string.IsNullOrEmpty(claim))
         {
             throw new UnauthorizedException("Access denied.");
         }

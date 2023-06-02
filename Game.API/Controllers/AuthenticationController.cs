@@ -4,6 +4,7 @@ using Game.Core.Services.Authentication.Login;
 using Game.Core.Services.Authentication.Logout;
 using Game.Core.Services.Authentication.Register;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -42,7 +43,7 @@ public class AuthenticationController : ControllerBase
 
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("logout")]
+    [HttpPost("logout"), Authorize, Fingerprinting]
     public async Task<IActionResult> Logout()
     {
         var logoutCommand = new LogoutCommand();

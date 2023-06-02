@@ -31,3 +31,5 @@ Fingerprint: Browser
 # Invalidate Refresh Token by deleting it on the database.
 # Logout User on all devices.
 POST {{host}}/api/auth/logout
+Authorization: Bearer Token
+Fingerprint: Browser
