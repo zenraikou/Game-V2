@@ -52,8 +52,8 @@ public class AuthenticationController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("refresh-token")]
-    public Task<AuthenticationResponse> RefreshToken()
+    [HttpPost("refresh-token"), Fingerprinting]
+    public Task<AuthenticationResponse> RefreshToken(string jwt)
     {
         throw new UnimplementedException("Not yet implemented.");
     }
