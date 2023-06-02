@@ -1,11 +1,13 @@
 using Game.Contracts.Authentication;
 using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Generator.GenerateSession;
+using Game.Contracts.Session;
 using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
 using Game.Core.Services.Generator.GenerateJWT;
 using Game.Core.Services.Generator.GenerateSession;
 using Game.Core.Services.Players.Get;
+using Game.Core.Services.Sessions.Post;
 using MapsterMapper;
 using MediatR;
 
@@ -38,7 +40,11 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
 
         var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
         var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-        await _mediator.Send(generateSessionCommand);
+        var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+
+        var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        var postSessionCommand = new PostSessionCommand(sessionRequest);
+        await _mediator.Send(postSessionCommand);
 
         var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
         return response;
