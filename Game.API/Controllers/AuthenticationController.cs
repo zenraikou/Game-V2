@@ -1,5 +1,6 @@
 using Game.API.Attributes;
 using Game.Contracts.Authentication;
+using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
 using Game.Core.Services.Authentication.Logout;
 using Game.Core.Services.Authentication.Register;
@@ -49,5 +50,11 @@ public class AuthenticationController : ControllerBase
         var logoutCommand = new LogoutCommand();
         await _mediator.Send(logoutCommand);
         return Ok();
+    }
+
+    [HttpPost("refresh-token")]
+    public Task<AuthenticationResponse> RefreshToken()
+    {
+        throw new UnimplementedException("Not yet implemented.");
     }
 }
