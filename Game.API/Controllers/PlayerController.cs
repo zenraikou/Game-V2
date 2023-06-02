@@ -1,7 +1,10 @@
 using Game.API.Attributes;
 using Game.Contracts.Player;
+using Game.Core.Services.Players.Delete;
 using Game.Core.Services.Players.Get;
 using Game.Core.Services.Players.GetAll;
+using Game.Core.Services.Players.Post;
+using Game.Core.Services.Players.Update;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,5 +46,39 @@ public class PlayerController : ControllerBase
         var getPlayerQuery = new GetPlayerQuery(p => p.Id == id);
         var response = await _mediator.Send(getPlayerQuery);
         return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [HttpPost] /* POST: {host}/api/player */
+    public async Task<ActionResult<PlayerResponse>> Post(PlayerRequest request)
+    {
+        var postPlayerCommand = new PostPlayerCommand(request);
+        var response = await _mediator.Send(postPlayerCommand);
+        return CreatedAtAction(nameof(Get), new { Id = response.Id }, response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPut] /* PUT: {host}/api/player */
+    public async Task<ActionResult<PlayerResponse>> Put(PlayerRequest request)
+    {
+        var updatePlayerCommand = new UpdatePlayerCommand(request);
+        var response = await _mediator.Send(updatePlayerCommand);
+        return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)] 
+    [ProducesResponseType(StatusCodes.Status404NotFound)] 
+    [ProducesResponseType(StatusCodes.Status204NoContent)] 
+    [HttpDelete] /* DELETE: {host}/api/delete/player */
+    public async Task<ActionResult<IActionResult>> Delete(PlayerRequest request)
+    {
+        var deletePlayerCommand = new DeletePlayerCommand(request);
+        await _mediator.Send(deletePlayerCommand);
+        return NoContent();
     }
 }
