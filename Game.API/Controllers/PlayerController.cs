@@ -1,28 +1,47 @@
+using Game.API.Attributes;
 using Game.Contracts.Player;
+using Game.Core.Services.Players.Get;
 using Game.Core.Services.Players.GetAll;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-// [Authorize(Roles = "Admin"), Fingerprinting]
-[Route("api/[controller]"), ApiController]
+[Authorize(Roles = "Admin")]
+[Fingerprinting]
+[ApiController]
+[Route("api/[controller]")]
 public class PlayerController : ControllerBase
 {
     private readonly ILogger _logger;
-    private readonly IMediator _mediator;
+    private readonly ISender _mediator;
 
-    public PlayerController(ILogger logger, IMediator mediator)
+    public PlayerController(ILogger logger, ISender mediator)
     {
         _logger = logger;
         _mediator = mediator;
     }
 
-    [HttpGet("~/api/[controller]s")]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpGet("~/api/[controller]s")] /* GET: {host}/api/players */
     public async Task<ActionResult<IEnumerable<PlayerResponse>>> GetAll()
     {
-        var query = new GetAllPlayersQuery();
-        var response = await _mediator.Send(query);
+        var getAllPlayersQuery = new GetAllPlayersQuery();
+        var response = await _mediator.Send(getAllPlayersQuery);
+        return Ok(response);
+    }
+
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpGet("{id}")] /* GET: {host}/api/player/{id} */
+    public async Task<ActionResult<PlayerResponse>> Get(Guid id)
+    {
+        var getPlayerQuery = new GetPlayerQuery(p => p.Id == id);
+        var response = await _mediator.Send(getPlayerQuery);
         return Ok(response);
     }
 }
