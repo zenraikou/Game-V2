@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
@@ -22,8 +23,15 @@ public class GetAllPlayersHandler : IRequestHandler<GetAllPlayersQuery, IEnumera
 
     public async Task<IEnumerable<PlayerResponse>> Handle(GetAllPlayersQuery request, CancellationToken cancellationToken)
     {
-        var expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression!);
+        Expression<Func<Player, bool>>? expression = null;
+
+        if (request.Expression is not null)
+        {
+            expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression);
+        }
+
         var players = await _unitOfWork.Players.GetAll(expression);
+
         var response = _mapper.Map<IEnumerable<PlayerResponse>>(players);
         return response;
     }

@@ -1,3 +1,9 @@
+### Replace placeholders
+# token = JWT
+@token = placeholder
+# fingerprint = Device Fingerprint
+@fingerprint = Browser
+
 ### Base URL
 @host = https://localhost:7000
 
@@ -5,7 +11,7 @@
 # I
 POST {{host}}/api/auth/register
 Content-Type: application/json
-Fingerprint: Browser
+Fingerprint: {{fingerprint}}
 
 {
     "handle": "eris",
@@ -20,7 +26,7 @@ Fingerprint: Browser
 # I
 POST {{host}}/api/auth/login
 Content-Type: application/json
-Fingerprint: Browser
+Fingerprint: {{fingerprint}}
 
 {
     "uniqueName": "eris",
@@ -31,5 +37,5 @@ Fingerprint: Browser
 # Invalidate Refresh Token by deleting it on the database.
 # Logout User on all devices.
 POST {{host}}/api/auth/logout
-Authorization: Bearer Token
-Fingerprint: Browser
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}

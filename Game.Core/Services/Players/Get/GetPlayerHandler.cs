@@ -1,6 +1,7 @@
 using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Exceptions;
 using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
@@ -24,7 +25,13 @@ public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse?>
     {
         var expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression);
         var player = await _unitOfWork.Players.Get(expression);
-        var response = _mapper.Map<PlayerResponse>(player!);
+
+        if (player is null)
+        {
+            throw new NotFoundException("Player not found.");
+        }
+
+        var response = _mapper.Map<PlayerResponse>(player);
         return response;
     }
 }

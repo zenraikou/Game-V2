@@ -17,12 +17,10 @@ namespace Game.API.Controllers;
 [Route("api/[controller]")]
 public class PlayerController : ControllerBase
 {
-    private readonly ILogger _logger;
     private readonly ISender _mediator;
 
-    public PlayerController(ILogger logger, ISender mediator)
+    public PlayerController(ISender mediator)
     {
-        _logger = logger;
         _mediator = mediator;
     }
 

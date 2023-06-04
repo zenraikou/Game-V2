@@ -10,16 +10,19 @@ using Game.Core.Services.Players.Get;
 using Game.Core.Services.Sessions.Post;
 using MapsterMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Game.Core.Services.Authentication.Register;
 
 public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse>
 {
+    private ILogger<LoginHandler> _logger;
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
-    public LoginHandler(ISender mediator, IMapper mapper)
+    public LoginHandler(ILogger<LoginHandler> logger, ISender mediator, IMapper mapper)
     {
+        _logger = logger;
         _mediator = mediator;
         _mapper = mapper;
     }
@@ -28,7 +31,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
-
+        _logger.LogError($"Player Response Password Hash = {playerResponse?.PasswordHash}");
         if (playerResponse is null || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
         {
             throw new UnauthorizedException("Invalid credentials.");

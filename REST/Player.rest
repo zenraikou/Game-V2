@@ -1,4 +1,20 @@
+### Replace placeholders
+# id = GUID
+@id = placeholder
+# token = JWT
+@token = placeholder
+# fingerprint = Device Fingerprint
+@fingerprint = Browser
+
 ### Base URL
 @host = https://localhost:7000
 
+### GET ALL
 GET {{host}}/api/players
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
+
+### GET
+GET {{host}}/api/player/{{id}}
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
