@@ -4,10 +4,14 @@ using Game.Contracts.Generator.GenerateSession;
 using Game.Contracts.Session;
 using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
+using Game.Core.Services.Claims;
 using Game.Core.Services.Generator.GenerateJWT;
 using Game.Core.Services.Generator.GenerateSession;
+using Game.Core.Services.Header;
 using Game.Core.Services.Players.Get;
+using Game.Core.Services.Sessions.Get;
 using Game.Core.Services.Sessions.Post;
+using Game.Core.Services.Sessions.Update;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -31,7 +35,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
-        _logger.LogError($"Player Response Password Hash = {playerResponse?.PasswordHash}");
+
         if (playerResponse is null || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
         {
             throw new UnauthorizedException("Invalid credentials.");
@@ -45,9 +49,27 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
         var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
         var generateSessionResponse = await _mediator.Send(generateSessionCommand);
 
+        var getClaimQuery = new GetClaimQuery(c => c.Type == "jti");
+        var jti = await _mediator.Send(getClaimQuery);
+
+        var getHeaderQuery = new GetHeaderQuery("Fingerprint");
+        var fingerprint = await _mediator.Send(getHeaderQuery);
+
+        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
+        var sessionResponse = await _mediator.Send(getSessionQuery);
+
         var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
-        var postSessionCommand = new PostSessionCommand(sessionRequest);
-        await _mediator.Send(postSessionCommand);
+
+        if (sessionResponse is null || !sessionResponse.Fingerprint.Equals(fingerprint))
+        {
+            var postSessionCommand = new PostSessionCommand(sessionRequest);
+            await _mediator.Send(postSessionCommand);
+        }
+        else
+        {
+            var updateSessionCommand = new UpdateSessionCommand(sessionRequest);
+            await _mediator.Send(updateSessionCommand);
+        }
 
         var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
         return response;

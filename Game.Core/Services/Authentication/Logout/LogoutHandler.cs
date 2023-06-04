@@ -21,8 +21,8 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
 
     public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        var getClaimCommand = new GetClaimCommand(c => c.Type == "jti");
-        var claim = await _mediator.Send(getClaimCommand);
+        var getClaimQuery = new GetClaimQuery(c => c.Type == "jti");
+        var claim = await _mediator.Send(getClaimQuery);
 
         var getSessionQuery = new GetSessionQuery(s => s.JTI == claim);
         var sessionResponse = await _mediator.Send(getSessionQuery);
