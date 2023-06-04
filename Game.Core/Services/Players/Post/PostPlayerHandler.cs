@@ -22,6 +22,7 @@ public class PostPlayerHandler : IRequestHandler<PostPlayerCommand, PlayerRespon
         var player = _mapper.Map<Player>(request.Player);
         await _unitOfWork.Players.Post(player);
         await _unitOfWork.Save();
+
         var response = _mapper.Map<PlayerResponse>(player);
         return response;
     }

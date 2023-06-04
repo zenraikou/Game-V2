@@ -1,12 +1,12 @@
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Domain.Entities;
+using Game.Core.Exceptions;
 using MapsterMapper;
 using MediatR;
 
 namespace Game.Core.Services.Sessions.Delete;
 
-public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, SessionResponse>
+public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -17,12 +17,18 @@ public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Sessio
         _mapper = mapper;
     }
 
-    public async Task<SessionResponse> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = _mapper.Map<Session>(request.Session);
+        var session = await _unitOfWork.Sessions.Get(s => s.JTI == request.Id);
+
+        if (session is null)
+        {
+            throw new NotFoundException("Session not found.");
+        }
+
         await _unitOfWork.Sessions.Delete(session);
         await _unitOfWork.Save();
-        var response = _mapper.Map<SessionResponse>(session);
-        return response;
+
+        return await Unit.Task;
     }
 }

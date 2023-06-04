@@ -62,22 +62,22 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPut] /* PUT: {host}/api/player */
-    public async Task<ActionResult<PlayerResponse>> Put(PlayerRequest request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
+    public async Task<ActionResult<PlayerResponse>> Put(Guid id, PlayerRequest request)
     {
-        var updatePlayerCommand = new UpdatePlayerCommand(request);
-        var response = await _mediator.Send(updatePlayerCommand);
-        return Ok(response);
+        var updatePlayerCommand = new UpdatePlayerCommand(id, request);
+        await _mediator.Send(updatePlayerCommand);
+        return NoContent();
     }
 
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)] 
-    [ProducesResponseType(StatusCodes.Status404NotFound)] 
-    [ProducesResponseType(StatusCodes.Status204NoContent)] 
-    [HttpDelete] /* DELETE: {host}/api/delete/player */
-    public async Task<ActionResult<IActionResult>> Delete(PlayerRequest request)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpDelete("{id}")] /* DELETE: {host}/api/delete/player/{id} */
+    public async Task<ActionResult<IActionResult>> Delete(Guid id)
     {
-        var deletePlayerCommand = new DeletePlayerCommand(request);
+        var deletePlayerCommand = new DeletePlayerCommand(id);
         await _mediator.Send(deletePlayerCommand);
         return NoContent();
     }

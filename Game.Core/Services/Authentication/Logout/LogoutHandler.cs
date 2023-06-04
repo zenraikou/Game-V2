@@ -33,7 +33,7 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
         }
 
         var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-        var deleteSessionCommand = new DeleteSessionCommand(sessionRequest);
+        var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.JTI);
         await _mediator.Send(deleteSessionCommand);
 
         return await Unit.Task;
