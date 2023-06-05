@@ -34,8 +34,9 @@ Fingerprint: {{fingerprint}}
 }
 
 ### Logout
+# NOTE: Use Redis instead of Database later.
 # Invalidate Refresh Token by deleting it on the database.
-# Logout Player on currently used device.S
+# Logout Player on currently used device.
 POST {{host}}/api/auth/logout
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
