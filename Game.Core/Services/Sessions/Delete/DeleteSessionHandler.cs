@@ -1,4 +1,3 @@
-using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using MapsterMapper;
@@ -19,7 +18,7 @@ public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
 
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = await _unitOfWork.Sessions.Get(s => s.JTI == request.Id);
+        var session = await _unitOfWork.Sessions.Get(s => s.JTI == request.JTI);
 
         if (session is null)
         {

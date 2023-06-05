@@ -2,4 +2,4 @@ using MediatR;
 
 namespace Game.Core.Services.Sessions.Delete;
 
-public record DeleteSessionCommand(string Id) : IRequest<Unit>;
+public record DeleteSessionCommand(string JTI) : IRequest<Unit>;

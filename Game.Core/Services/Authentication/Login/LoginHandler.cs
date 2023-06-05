@@ -9,6 +9,7 @@ using Game.Core.Services.Generator.GenerateJWT;
 using Game.Core.Services.Generator.GenerateSession;
 using Game.Core.Services.Header;
 using Game.Core.Services.Players.Get;
+using Game.Core.Services.Sessions.Delete;
 using Game.Core.Services.Sessions.Get;
 using Game.Core.Services.Sessions.Post;
 using Game.Core.Services.Sessions.Update;
@@ -40,49 +41,79 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
         {
             throw new UnauthorizedException("Invalid credentials.");
         }
-
+        
         var getHeaderQuery = new GetHeaderQuery("Fingerprint");
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
         var getSessionQuery = new GetSessionQuery(s => s.Fingerprint == fingerprint);
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
-        AuthenticationResponse response;
+        SessionRequest sessionRequest;
+
+        if (sessionResponse is not null)
+        {
+            sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
+            var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.JTI);
+            await _mediator.Send(deleteSessionCommand);
+        }
 
         var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
+        var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
+        var generateJWTResponse = await _mediator.Send(generateJWTCommand);
 
-        if (sessionResponse is null)
-        {
-            var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
-            var generateJWTResponse = await _mediator.Send(generateJWTCommand);
+        var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
+        var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
+        var generateSessionResponse = await _mediator.Send(generateSessionCommand);
 
-            var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
-            var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-            var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+        sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        var postSessionCommand = new PostSessionCommand(sessionRequest);
+        await _mediator.Send(postSessionCommand);
 
-            var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
-            var postSessionCommand = new PostSessionCommand(sessionRequest);
-            await _mediator.Send(postSessionCommand);
-
-            response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
-        }
-        else
-        {
-            var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest, sessionResponse.JTI);
-            var generateJWTResponse = await _mediator.Send(generateJWTCommand);
-
-            var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
-            var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-            var generateSessionResponse = await _mediator.Send(generateSessionCommand);
-
-            var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
-            var updateSessionCommand = new UpdateSessionCommand(sessionRequest);
-            await _mediator.Send(updateSessionCommand);
-
-            response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
-        }
-
+        var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
         return response;
+
+        // var getHeaderQuery = new GetHeaderQuery("Fingerprint");
+        // var fingerprint = await _mediator.Send(getHeaderQuery);
+
+        // var getSessionQuery = new GetSessionQuery(s => s.Fingerprint == fingerprint);
+        // var sessionResponse = await _mediator.Send(getSessionQuery);
+
+        // AuthenticationResponse response;
+
+        // var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
+
+        // if (sessionResponse is null)
+        // {
+        //     var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
+        //     var generateJWTResponse = await _mediator.Send(generateJWTCommand);
+
+        //     var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
+        //     var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
+        //     var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+
+        //     var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        //     var postSessionCommand = new PostSessionCommand(sessionRequest);
+        //     await _mediator.Send(postSessionCommand);
+
+        //     response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
+        // }
+        // else
+        // {
+        //     var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest, sessionResponse.JTI);
+        //     var generateJWTResponse = await _mediator.Send(generateJWTCommand);
+
+        //     var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
+        //     var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
+        //     var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+
+        //     var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        //     var updateSessionCommand = new UpdateSessionCommand(sessionRequest);
+        //     await _mediator.Send(updateSessionCommand);
+
+        //     response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
+        // }
+
+        // return response;
 
         // var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
         // var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
