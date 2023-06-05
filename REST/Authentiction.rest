@@ -39,3 +39,8 @@ Fingerprint: {{fingerprint}}
 POST {{host}}/api/auth/logout
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
+
+### Refresh Token
+POST {{host}}/api/auth/refresh-token
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}

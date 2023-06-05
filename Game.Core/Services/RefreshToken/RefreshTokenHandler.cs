@@ -9,16 +9,19 @@ using Game.Core.Services.Generator.GenerateJWT;
 using Game.Core.Services.Header;
 using Game.Core.Services.Sessions.Get;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Game.Core.Services.RefreshToken;
 
 public record RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, AuthenticationResponse>
 {
+    private readonly ILogger<RefreshTokenHandler> _logger;
     private readonly ISender _mediator;
     private readonly ITime _time;
 
-    public RefreshTokenHandler(ISender mediator, ITime time)
+    public RefreshTokenHandler(ILogger<RefreshTokenHandler> logger, ISender mediator, ITime time)
     {
+        _logger = logger;
         _mediator = mediator;
         _time = time;
     }
@@ -44,11 +47,14 @@ public record RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Authent
 
         getClaimQuery = new GetClaimQuery(c => c.Type == JWTClaims.Expiry);
         var expiry = await _mediator.Send(getClaimQuery);
+
+        var expiryUnix = long.Parse(expiry);
+        var expiryUtc = DateTimeOffset.FromUnixTimeSeconds(expiryUnix).UtcDateTime;
         
         var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
-        if (sessionResponse is null || sessionResponse.Fingerprint != fingerprint/* || sessionResponse.Expiry < expiry*/)
+        if (sessionResponse is null || sessionResponse.Fingerprint != fingerprint || _time.Now <= expiryUtc || _time.Now >= sessionResponse.Expiry)
         {
             throw new UnauthorizedException("Access denied.");
         }

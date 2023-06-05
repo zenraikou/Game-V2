@@ -54,7 +54,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("refresh-token"), Fingerprinting]
-    public async Task<ActionResult<AuthenticationResponse>> RefreshToken(string jwt)
+    public async Task<ActionResult<AuthenticationResponse>> RefreshToken()
     {
         var refreshTokenCommand = new RefreshTokenCommand();
         var response = await _mediator.Send(refreshTokenCommand);
