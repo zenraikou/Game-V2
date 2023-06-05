@@ -1,14 +1,20 @@
+### Replace "placegholders"
+# token = JWT
+@token = placeholder
+# fingerprint = Device Fingerprint
+@fingerprint = Browser
+
 ### Base URL
 @host = https://localhost:7000
 
 ### Greetings
 # Replace "JWT" with the received Token response when you successfully register or login using the authentication endpoints.
 GET {{host}}/api/test/greetings
-Authorization: Bearer Token
-Fingerprint: Browser
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
 
 ### Session
 # Get User Session
 GET {{host}}/api/test/session
-Authorization: Bearer Token
-Fingerprint: Browser
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
