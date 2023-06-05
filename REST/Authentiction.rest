@@ -35,7 +35,7 @@ Fingerprint: {{fingerprint}}
 
 ### Logout
 # Invalidate Refresh Token by deleting it on the database.
-# Logout User on all devices.
+# Logout Player on currently used device.S
 POST {{host}}/api/auth/logout
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
