@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Game.Contracts.Generator.GenerateJWT;
 using Game.Core.Common.Interfaces.Time;
-using Game.Core.Common.Settings;
+using Game.Core.Common.JWT;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -28,9 +28,9 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJW
     {
         var claims = new Claim[]
         {
-            new Claim("id", request.GenerateJWT.Id.ToString()),
-            new Claim("role", request.GenerateJWT.Role.ToString()),
-            new Claim("jti", request.JTI ?? Guid.NewGuid().ToString())
+            new Claim(JWTClaims.JTI, request.GenerateJWT.JTI ?? Guid.NewGuid().ToString()),
+            new Claim(JWTClaims.Id, request.GenerateJWT.Id),
+            new Claim(JWTClaims.Role, request.GenerateJWT.Role)
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));

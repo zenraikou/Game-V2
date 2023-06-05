@@ -1,8 +1,8 @@
 using Game.Contracts.Authentication;
 using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Generator.GenerateSession;
-using Game.Contracts.Player;
 using Game.Contracts.Session;
+using Game.Core.Common.Headers;
 using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
 using Game.Core.Services.Generator.GenerateJWT;
@@ -41,7 +41,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
             throw new UnauthorizedException("Invalid credentials.");
         }
         
-        var getHeaderQuery = new GetHeaderQuery("Fingerprint");
+        var getHeaderQuery = new GetHeaderQuery(Headers.Fingerprint);
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
         var getSessionQuery = new GetSessionQuery(s => s.Fingerprint == fingerprint);

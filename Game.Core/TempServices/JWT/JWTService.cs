@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Game.Core.Common.Settings;
+using Game.Core.Common.JWT;
 using Game.Core.TempServices.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;

@@ -4,6 +4,7 @@ using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
 using Game.Core.Services.Authentication.Logout;
 using Game.Core.Services.Authentication.Register;
+using Game.Core.Services.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,8 +54,10 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("refresh-token"), Fingerprinting]
-    public Task<AuthenticationResponse> RefreshToken(string jwt)
+    public async Task<ActionResult<AuthenticationResponse>> RefreshToken(string jwt)
     {
-        throw new UnimplementedException("Not yet implemented.");
+        var refreshTokenCommand = new RefreshTokenCommand();
+        var response = await _mediator.Send(refreshTokenCommand);
+        return Ok(response);
     }
 }

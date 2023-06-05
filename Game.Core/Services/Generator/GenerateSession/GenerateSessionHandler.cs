@@ -1,8 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
 using Game.Contracts.Generator.GenerateSession;
 using Game.Contracts.Session;
+using Game.Core.Common.Headers;
 using Game.Core.Common.Interfaces.Time;
-using Game.Core.Common.Settings;
+using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.Services.Claims;
 using Game.Core.Services.Header;
@@ -37,10 +37,10 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Ge
 
     public async Task<GenerateSessionResponse> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
     {
-        var getHeaderQuery = new GetHeaderQuery("Fingerprint");
+        var getHeaderQuery = new GetHeaderQuery(Headers.Fingerprint);
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
-        var getClaimQuery = new GetClaimQuery(c => c.Type == "jti", request.GenerateSession.JWT);
+        var getClaimQuery = new GetClaimQuery(c => c.Type == JWTClaims.JTI, request.GenerateSession.JWT);
         var jti = await _mediator.Send(getClaimQuery);
 
         if (fingerprint is null)

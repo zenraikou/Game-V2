@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Game.Core.Services.Generator.GenerateJWT;
 
-public record GenerateJWTCommand(GenerateJWTRequest GenerateJWT, string? JTI = null) : IRequest<GenerateJWTResponse>;
+public record GenerateJWTCommand(GenerateJWTRequest GenerateJWT) : IRequest<GenerateJWTResponse>;

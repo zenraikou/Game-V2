@@ -1,5 +1,5 @@
 using FluentValidation;
-using Game.Core.Common.Settings;
+using Game.Core.Common.JWT;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Game.Core.Extensions;

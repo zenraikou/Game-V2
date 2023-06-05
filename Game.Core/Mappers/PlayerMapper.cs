@@ -24,8 +24,5 @@ public class PlayerMapper : IRegister
         config.ForType<PlayerResponse, PlayerRequest>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Password, src => src.PasswordHash);
-
-        config.ForType<PlayerResponse, GenerateJWTRequest>()
-            .Map(dest => dest.Id, src => src.Id);
     }
 }

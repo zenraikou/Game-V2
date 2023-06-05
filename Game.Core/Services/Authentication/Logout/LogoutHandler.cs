@@ -1,4 +1,5 @@
 using Game.Contracts.Session;
+using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.Services.Claims;
 using Game.Core.Services.Sessions.Delete;
@@ -21,10 +22,10 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
 
     public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
-        var getClaimQuery = new GetClaimQuery(c => c.Type == "jti");
-        var claim = await _mediator.Send(getClaimQuery);
+        var getClaimQuery = new GetClaimQuery(c => c.Type == JWTClaims.JTI);
+        var jti = await _mediator.Send(getClaimQuery);
 
-        var getSessionQuery = new GetSessionQuery(s => s.JTI == claim);
+        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
         if (sessionResponse is null)
