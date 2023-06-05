@@ -30,7 +30,7 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJW
         {
             new Claim("id", request.GenerateJWT.Id.ToString()),
             new Claim("role", request.GenerateJWT.Role.ToString()),
-            new Claim("jti", Guid.NewGuid().ToString())
+            new Claim("jti", request.JTI ?? Guid.NewGuid().ToString())
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));

@@ -16,13 +16,22 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, string>
 
     public async Task<string> Handle(GetClaimQuery request, CancellationToken cancellationToken)
     {
-        var getHeaderQuery = new GetHeaderQuery("Authorization");
-        var header = await _mediator.Send(getHeaderQuery);
-
-        var jwt = header?.Split(' ')[1];
-
         var handler = new JwtSecurityTokenHandler();
-        var claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+        var claim = string.Empty;
+
+        if (string.IsNullOrEmpty(request.JWT))
+        {
+            var getHeaderQuery = new GetHeaderQuery("Authorization");
+            var header = await _mediator.Send(getHeaderQuery);
+
+            var jwt = header?.Split(' ')[1];
+
+            claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+        }
+        else
+        {
+            claim = handler.ReadJwtToken(request.JWT).Claims.FirstOrDefault(request.Expression)?.Value;
+        }
 
         if (string.IsNullOrEmpty(claim))
         {

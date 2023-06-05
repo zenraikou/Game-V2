@@ -4,6 +4,8 @@ using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Settings;
 using Game.Core.Exceptions;
+using Game.Core.Services.Claims;
+using Game.Core.Services.Header;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -13,17 +15,20 @@ namespace Game.Core.Services.Generator.GenerateSession;
 
 public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, GenerateSessionResponse>
 {
+    private readonly ISender _mediator;
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
 
     public GenerateSessionHandler(
+        ISender mediator, 
         ITime time, 
         IOptions<JWTSettings> jwtSettings, 
         IHttpContextAccessor httpContextAccessor, 
         IMapper mapper)
     {
+        _mediator = mediator;
         _time = time;
         _jwtSettings = jwtSettings.Value;
         _httpContextAccessor = httpContextAccessor;
@@ -32,8 +37,11 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Ge
 
     public async Task<GenerateSessionResponse> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
     {
-        var jti = new JwtSecurityTokenHandler().ReadJwtToken(request.GenerateSession.JWT).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
-        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+        var getHeaderQuery = new GetHeaderQuery("Fingerprint");
+        var fingerprint = await _mediator.Send(getHeaderQuery);
+
+        var getClaimQuery = new GetClaimQuery(c => c.Type == "jti", request.GenerateSession.JWT);
+        var jti = await _mediator.Send(getClaimQuery);
 
         if (fingerprint is null)
         {
