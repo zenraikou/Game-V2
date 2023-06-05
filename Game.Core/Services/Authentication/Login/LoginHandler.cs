@@ -1,6 +1,7 @@
 using Game.Contracts.Authentication;
 using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Generator.GenerateSession;
+using Game.Contracts.Player;
 using Game.Contracts.Session;
 using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Login;
