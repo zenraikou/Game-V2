@@ -18,3 +18,34 @@ Fingerprint: {{fingerprint}}
 GET {{host}}/api/player/{{id}}
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
+
+### POST
+POST {{host}}/api/player
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
+
+{
+    "handle": "yunyun",
+    "name": "Yunyun",
+    "uniqueName": "yunyun",
+    "email": "yunyun@konosuba.gg",
+    "password": "?Ok4",
+    "role": "Player"
+}
+
+PUT {{host}}/api/player/{{id}}
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
+
+{
+    "handle": "wiz",
+    "name": "Wiz",
+    "uniqueName": "wiz",
+    "email": "wiz@konosuba.gg",
+    "password": "?Ok4",
+    "role": "Player"
+}
+
+DELETE {{host}}/api/player/{{id}}
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
