@@ -1,11 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
 using Game.API.Attributes;
 using Game.Core.Common.Constants;
-using Game.Core.Services.Sessions.Get;
+using Game.Core.Services.Sessions.Queries;
 using Game.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Game.API.Controllers;
 

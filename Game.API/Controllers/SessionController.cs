@@ -1,10 +1,7 @@
 using Game.API.Attributes;
 using Game.Contracts.Session;
-using Game.Core.Services.Sessions.Delete;
-using Game.Core.Services.Sessions.Get;
-using Game.Core.Services.Sessions.GetAll;
-using Game.Core.Services.Sessions.Post;
-using Game.Core.Services.Sessions.Update;
+using Game.Core.Services.Sessions.Commands;
+using Game.Core.Services.Sessions.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

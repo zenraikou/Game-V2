@@ -1,6 +1,5 @@
 using Game.API.Attributes;
-using Game.Core.Exceptions;
-using Game.Core.Services.Fingerprinting;
+using Game.Core.Services.Authentication.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 

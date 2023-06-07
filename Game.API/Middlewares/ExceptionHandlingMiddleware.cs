@@ -1,6 +1,6 @@
+using Game.Core.Exceptions;
 using System.Net;
 using System.Text.Json;
-using Game.Core.Exceptions;
 
 namespace Game.API.Middlewares;
 

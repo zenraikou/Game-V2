@@ -1,9 +1,6 @@
 using Game.API.Attributes;
 using Game.Contracts.Authentication;
-using Game.Core.Exceptions;
-using Game.Core.Services.Authentication.Login;
-using Game.Core.Services.Authentication.Logout;
-using Game.Core.Services.Authentication.Register;
+using Game.Core.Services.Authentication.Commands;
 using Game.Core.Services.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

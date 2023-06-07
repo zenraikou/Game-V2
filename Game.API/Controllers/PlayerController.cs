@@ -1,10 +1,7 @@
 using Game.API.Attributes;
 using Game.Contracts.Player;
-using Game.Core.Services.Players.Delete;
-using Game.Core.Services.Players.Get;
-using Game.Core.Services.Players.GetAll;
-using Game.Core.Services.Players.Post;
-using Game.Core.Services.Players.Update;
+using Game.Core.Services.Players.Commands;
+using Game.Core.Services.Players.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

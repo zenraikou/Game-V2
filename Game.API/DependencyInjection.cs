@@ -1,6 +1,6 @@
-using System.Text;
 using Game.API.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Game.API;
 
