@@ -1,6 +1,6 @@
+using Game.Core.Common.Interfaces.Mappers;
 using System.Linq.Expressions;
 using System.Reflection;
-using Game.Core.Common.Interfaces.Mappers;
 
 namespace Game.Core.Mappers;
 

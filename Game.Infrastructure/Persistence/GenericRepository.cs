@@ -1,7 +1,7 @@
-using System.Linq.Expressions;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Game.Infrastructure.Persistence;
 
