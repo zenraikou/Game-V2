@@ -17,10 +17,12 @@ namespace Game.API.Controllers;
 [Route("api/[controller]")]
 public class PlayerController : ControllerBase
 {
+    private readonly ILogger<PlayerController> _logger;
     private readonly ISender _mediator;
 
-    public PlayerController(ISender mediator)
+    public PlayerController(ILogger<PlayerController> logger, ISender mediator)
     {
+        _logger = logger;
         _mediator = mediator;
     }
 
@@ -32,6 +34,14 @@ public class PlayerController : ControllerBase
     {
         var getAllPlayersQuery = new GetAllPlayersQuery();
         var response = await _mediator.Send(getAllPlayersQuery);
+
+        if (!response.Any())
+        {
+            _logger.LogInformation("204 No Content");
+            return NoContent();
+        }
+
+        _logger.LogInformation("200 OK");
         return Ok(response);
     }
 
@@ -43,6 +53,8 @@ public class PlayerController : ControllerBase
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.Id == id);
         var response = await _mediator.Send(getPlayerQuery);
+
+        _logger.LogInformation("200 OK");
         return Ok(response);
     }
 
@@ -54,6 +66,8 @@ public class PlayerController : ControllerBase
     {
         var postPlayerCommand = new PostPlayerCommand(request);
         var response = await _mediator.Send(postPlayerCommand);
+
+        _logger.LogInformation("201 Created");
         return CreatedAtAction(nameof(Get), new { Id = response.Id }, response);
     }
 
@@ -66,6 +80,8 @@ public class PlayerController : ControllerBase
     {
         var updatePlayerCommand = new UpdatePlayerCommand(id, request);
         await _mediator.Send(updatePlayerCommand);
+
+        _logger.LogInformation("204 No Content");
         return NoContent();
     }
 
@@ -77,6 +93,8 @@ public class PlayerController : ControllerBase
     {
         var deletePlayerCommand = new DeletePlayerCommand(id);
         await _mediator.Send(deletePlayerCommand);
+
+        _logger.LogInformation("204 No Content");
         return NoContent();
     }
 }
