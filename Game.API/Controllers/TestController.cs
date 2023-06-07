@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Game.API.Attributes;
-using Game.Core.Common.Headers;
-using Game.Core.Common.JWT;
+using Game.Core.Common.Constants;
 using Game.Core.Services.Sessions.Get;
 using Game.Domain.Entities;
 using MediatR;
@@ -33,7 +32,7 @@ public class TestController : ControllerBase
     [HttpGet("session")]
     public async Task<ActionResult<Session>> Session()
     {
-        var jwt = Request.Headers[Headers.Authorization].ToString().Split(' ')[1];
+        var jwt = Request.Headers[HTTPHeaders.Authorization].ToString().Split(' ')[1];
         var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
 
         var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));

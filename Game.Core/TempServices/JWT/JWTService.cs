@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Game.Core.Common.Headers;
-using Game.Core.Common.JWT;
+using Game.Core.Common.Constants;
+using Game.Core.Common.Settings;
 using Game.Core.TempServices.Time;
 using Game.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +50,7 @@ public class JWTService : IJWTService
     public Session GenerateSession(string jwt)
     {
         var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
-        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers[Headers.Fingerprint].ToString();
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers[HTTPHeaders.Fingerprint].ToString();
 
         if (fingerprint is null)
         {

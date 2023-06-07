@@ -1,6 +1,6 @@
 using Game.Contracts.Authentication;
+using Game.Core.Common.Constants;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.TempServices.JWT;
 using Game.Core.TempServices.PlayerClaim;

@@ -1,8 +1,7 @@
 using Game.Contracts.Authentication;
 using Game.Contracts.Generator.GenerateJWT;
-using Game.Core.Common.Headers;
+using Game.Core.Common.Constants;
 using Game.Core.Common.Interfaces.Time;
-using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.Services.Claims;
 using Game.Core.Services.Generator.GenerateJWT;
@@ -28,7 +27,7 @@ public record RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Authent
 
     public async Task<AuthenticationResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var getHeaderQuery = new GetHeaderQuery(Headers.Fingerprint);
+        var getHeaderQuery = new GetHeaderQuery(HTTPHeaders.Fingerprint);
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
         if (string.IsNullOrEmpty(fingerprint))

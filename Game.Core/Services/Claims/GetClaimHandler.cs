@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using Game.Core.Common.Headers;
+using Game.Core.Common.Constants;
 using Game.Core.Exceptions;
 using Game.Core.Services.Header;
 using MediatR;
@@ -22,7 +22,7 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, string>
 
         if (string.IsNullOrEmpty(request.JWT))
         {
-            var getHeaderQuery = new GetHeaderQuery(Headers.Authorization);
+            var getHeaderQuery = new GetHeaderQuery(HTTPHeaders.Authorization);
             var header = await _mediator.Send(getHeaderQuery);
 
             var jwt = header?.Split(' ')[1];

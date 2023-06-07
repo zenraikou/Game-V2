@@ -1,6 +1,5 @@
 using Game.Contracts.Session;
-using Game.Core.Common.Headers;
-using Game.Core.Common.JWT;
+using Game.Core.Common.Constants;
 using Game.Core.Exceptions;
 using Game.Core.Services.Claims;
 using Game.Core.Services.Header;
@@ -27,7 +26,7 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
         var getClaimQuery = new GetClaimQuery(c => c.Type == JWTClaims.JTI);
         var jti = await _mediator.Send(getClaimQuery);
 
-        var getHeaderQuery = new GetHeaderQuery(Headers.Fingerprint);
+        var getHeaderQuery = new GetHeaderQuery(HTTPHeaders.Fingerprint);
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
         var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
