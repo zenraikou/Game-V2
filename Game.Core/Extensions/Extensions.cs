@@ -1,7 +1,9 @@
-using System.Reflection;
+using Game.Core.Common.Interfaces.Mappers;
+using Game.Core.Mappers;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Game.Core.Extensions;
 
@@ -14,6 +16,8 @@ public static class Extensions
 
         services.AddSingleton(config);
         services.AddScoped<IMapper, Mapper>();
+
+        services.AddSingleton<IExpressionMapper, ExpressionMapper>();
 
         return services;
     }

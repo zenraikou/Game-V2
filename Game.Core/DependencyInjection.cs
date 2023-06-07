@@ -1,10 +1,8 @@
 using FluentValidation;
-using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Settings;
 using Game.Core.Common.Time;
 using Game.Core.Extensions;
-using Game.Core.Mappers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,8 +16,6 @@ public static class DependencyInjection
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
         services.AddMappers();
 
-        services.AddSingleton<IExpressionMapper, ExpressionMapper>();
-        
         services.Configure<JWTSettings>(configuration.GetSection(JWTSettings.SectionName));
         services.AddSingleton<ITime, Time>();
         services.AddHttpContextAccessor();
