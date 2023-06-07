@@ -50,7 +50,7 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Ge
 
         var sessionResponse = new SessionResponse
         {
-            JTI = jti,
+            Id = Guid.Parse(jti),
             Fingerprint = fingerprint,
             Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };

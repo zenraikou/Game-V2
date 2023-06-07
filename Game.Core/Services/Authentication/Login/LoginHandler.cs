@@ -52,7 +52,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
         if (sessionResponse is not null)
         {
             sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-            var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.JTI);
+            var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.Id);
             await _mediator.Send(deleteSessionCommand);
         }
 

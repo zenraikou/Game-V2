@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Game.Core.Common.Headers;
 using Game.Core.Common.JWT;
 using Game.Core.TempServices.Time;
 using Game.Domain.Entities;
@@ -48,8 +49,8 @@ public class JWTService : IJWTService
 
     public Session GenerateSession(string jwt)
     {
-        var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == "jti")!.Value.ToString();
-        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+        var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers[Headers.Fingerprint].ToString();
 
         if (fingerprint is null)
         {
@@ -58,7 +59,7 @@ public class JWTService : IJWTService
 
         var session = new Session
         {
-            JTI = jti,
+            Id = Guid.Parse(jti),
             Fingerprint = fingerprint,
             Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };

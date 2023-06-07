@@ -51,7 +51,7 @@ public record RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Authent
         var expiryUnix = long.Parse(expiry);
         var expiryUtc = DateTimeOffset.FromUnixTimeSeconds(expiryUnix).UtcDateTime;
         
-        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
+        var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
         if (sessionResponse is null || sessionResponse.Fingerprint != fingerprint || _time.Now <= expiryUtc || _time.Now >= sessionResponse.Expiry)

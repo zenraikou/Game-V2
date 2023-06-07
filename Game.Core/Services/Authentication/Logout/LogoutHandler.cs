@@ -30,7 +30,7 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
         var getHeaderQuery = new GetHeaderQuery(Headers.Fingerprint);
         var fingerprint = await _mediator.Send(getHeaderQuery);
 
-        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
+        var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
         if (sessionResponse is null || sessionResponse.Fingerprint != fingerprint)
@@ -39,7 +39,7 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
         }
 
         var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-        var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.JTI);
+        var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.Id);
         await _mediator.Send(deleteSessionCommand);
 
         return await Unit.Task;

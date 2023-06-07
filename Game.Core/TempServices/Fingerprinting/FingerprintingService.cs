@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using Game.Core.Common.Headers;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Microsoft.AspNetCore.Http;
 
@@ -18,8 +20,8 @@ public class FingerprintingService : IFingerprintingService
 
     public async Task Validate()
     {
-        var jwt = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Split(' ')[1];
-        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers["Fingerprint"].ToString();
+        var jwt = _httpContextAccessor.HttpContext?.Request.Headers[Headers.Authorization].ToString().Split(' ')[1];
+        var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers[Headers.Fingerprint].ToString();
 
         if (jwt is null || fingerprint is null) 
         {
@@ -34,8 +36,8 @@ public class FingerprintingService : IFingerprintingService
         }
 
         var token = handler.ReadJwtToken(jwt);
-        var jti = token.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-        var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
+        var jti = token.Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
+        var session = await _unitOfWork.Sessions.Get(s => s.Id == Guid.Parse(jti));
 
         if (session is null || !session.Fingerprint.Equals(fingerprint))
         {

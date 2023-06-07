@@ -27,11 +27,11 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, string>
 
             var jwt = header?.Split(' ')[1];
 
-            claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+            claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)!.Value;
         }
         else
         {
-            claim = handler.ReadJwtToken(request.JWT).Claims.FirstOrDefault(request.Expression)?.Value;
+            claim = handler.ReadJwtToken(request.JWT).Claims.FirstOrDefault(request.Expression)!.Value;
         }
 
         if (string.IsNullOrEmpty(claim))
@@ -39,6 +39,6 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, string>
             throw new UnauthorizedException("Access denied.");
         }
 
-        return await Task.FromResult(claim);
+        return claim;
     }
 }

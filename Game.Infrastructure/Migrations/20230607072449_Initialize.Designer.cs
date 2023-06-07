@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Game.Infrastructure.Migrations
 {
     [DbContext(typeof(GameDBContext))]
-    [Migration("20230602094030_Initialize")]
+    [Migration("20230607072449_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -64,45 +64,45 @@ namespace Game.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("93cbf201-8dd8-4306-a542-1e3e91d1b356"),
-                            CreationStamp = new DateTime(2023, 6, 2, 9, 40, 27, 849, DateTimeKind.Utc).AddTicks(8290),
+                            Id = new Guid("9c52aea2-241e-4821-b866-35ebd1a4aa90"),
+                            CreationStamp = new DateTime(2023, 6, 7, 7, 24, 46, 707, DateTimeKind.Utc).AddTicks(9903),
                             Email = "kazuma@konosuba.gg",
                             Handle = "kazuma",
                             Name = "Kazuma",
-                            PasswordHash = "$2a$11$Ql/mnmJyyGu.zbU5VAE0Lemq57t89NjRKby6EZac57GOmq9ad2H0m",
+                            PasswordHash = "$2a$11$xJDWgS8MPpEvKowvYf1gOuIVgLqDmtkQ6njhg.7iHqYPt7B82YaLq",
                             Role = 1,
                             UniqueName = "kazuma"
                         },
                         new
                         {
-                            Id = new Guid("1559905d-71f3-4c98-a69f-8fd7cf8d8a53"),
-                            CreationStamp = new DateTime(2023, 6, 2, 9, 40, 28, 342, DateTimeKind.Utc).AddTicks(2156),
+                            Id = new Guid("696ef631-f036-4b4c-b060-30ce19c9b892"),
+                            CreationStamp = new DateTime(2023, 6, 7, 7, 24, 47, 196, DateTimeKind.Utc).AddTicks(7444),
                             Email = "aqua@konosuba.gg",
                             Handle = "aqua",
                             Name = "Aqua",
-                            PasswordHash = "$2a$11$R0HMtACMOOg.ST4K8gLAvOfHf9/MEe9CLJw3Sns4Niykiuw6gqoYG",
+                            PasswordHash = "$2a$11$YK77jw/wejV45dr/UaEG1.ZV.UwwyOMee0t8VfJEVQgZZRyGKqBGi",
                             Role = 1,
                             UniqueName = "aqua"
                         },
                         new
                         {
-                            Id = new Guid("a195bc36-a9fe-40f9-baaf-be5b100d4a78"),
-                            CreationStamp = new DateTime(2023, 6, 2, 9, 40, 28, 835, DateTimeKind.Utc).AddTicks(9378),
+                            Id = new Guid("02749775-f2d0-417b-b5dd-6112c385f7bc"),
+                            CreationStamp = new DateTime(2023, 6, 7, 7, 24, 47, 689, DateTimeKind.Utc).AddTicks(7414),
                             Email = "megumin@konosuba.gg",
                             Handle = "megumin",
                             Name = "Megumin",
-                            PasswordHash = "$2a$11$j54jpz3wZsKWtgm0zJjK1uUck28MPY2ny7.KYIxV8c8R//GFq9O3a",
+                            PasswordHash = "$2a$11$Cuu/EP6htnyxxRU8.qTMzOxvlfZh9vgt2qkYOCcCYHCjX.Xj1iFwC",
                             Role = 1,
                             UniqueName = "megumin"
                         },
                         new
                         {
-                            Id = new Guid("441c386a-4dff-47fd-827a-3310bdeb8074"),
-                            CreationStamp = new DateTime(2023, 6, 2, 9, 40, 29, 475, DateTimeKind.Utc).AddTicks(3605),
+                            Id = new Guid("0c3af466-cae1-40bf-8c10-1faffbd39d62"),
+                            CreationStamp = new DateTime(2023, 6, 7, 7, 24, 48, 182, DateTimeKind.Utc).AddTicks(2122),
                             Email = "darkness@konosuba.gg",
                             Handle = "darkness",
                             Name = "Darkness",
-                            PasswordHash = "$2a$11$KLWojnpLB4fS.woDN8/Cb.6IoVQJrdShkvwZz81dg3lxen7WGbsBO",
+                            PasswordHash = "$2a$11$I1kGORQ3fflGss68DZ6vaejnA7ViUhnAI1pv4CYwZuTNpMUz81HN2",
                             Role = 1,
                             UniqueName = "darkness"
                         });
@@ -110,8 +110,9 @@ namespace Game.Infrastructure.Migrations
 
             modelBuilder.Entity("Game.Domain.Entities.Session", b =>
                 {
-                    b.Property<string>("JTI")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Expiry")
                         .HasColumnType("datetime2");
@@ -120,7 +121,7 @@ namespace Game.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("JTI");
+                    b.HasKey("Id");
 
                     b.ToTable("Sessions");
                 });

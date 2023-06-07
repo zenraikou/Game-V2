@@ -1,5 +1,6 @@
 using Game.Contracts.Authentication;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.TempServices.JWT;
 using Game.Core.TempServices.PlayerClaim;
@@ -23,7 +24,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthenticationResponse?> Register(RegisterRequest request)
     {
         var player = await _unitOfWork.Players.Get(u => u.UniqueName == request.UniqueName);
-        if (player is not null) throw new BadRequestException("ID already taken.");
+        if (player is not null) throw new BadRequestException("ID is not available.");
 
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var role = (Role)Enum.Parse(typeof(Role), request.Role.Substring(0, 1).ToUpper() + request.Role.Substring(1).ToLower());
@@ -71,13 +72,13 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task Logout()
     {
-        var jti = _playerClaimService.GetPlayerClaim(c => c.Type == "jti");
+        var jti = _playerClaimService.GetPlayerClaim(c => c.Type == JWTClaims.JTI);
         if (jti is null)
         {
             throw new UnauthorizedException("Invalid access.");
         }
 
-        var session = await _unitOfWork.Sessions.Get(s => s.JTI == jti);
+        var session = await _unitOfWork.Sessions.Get(s => s.Id == Guid.Parse(jti));
         if (session is null)
         {
             throw new UnauthorizedException("Invalid access.");

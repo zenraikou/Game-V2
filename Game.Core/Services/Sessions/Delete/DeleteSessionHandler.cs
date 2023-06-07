@@ -18,7 +18,7 @@ public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
 
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = await _unitOfWork.Sessions.Get(s => s.JTI == request.JTI);
+        var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
 
         if (session is null)
         {

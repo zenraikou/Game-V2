@@ -1,5 +1,6 @@
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Exceptions;
 using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
@@ -19,7 +20,15 @@ public class UpdateSessionHandler : IRequestHandler<UpdateSessionCommand, Unit>
 
     public async Task<Unit> Handle(UpdateSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = _mapper.Map<Session>(request.Session);
+        var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
+
+        if (session is null)
+        {
+            throw new NotFoundException("Session not found.");
+        }
+
+        session = _mapper.Map<Session>(request.Session);
+
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();
         return await Unit.Task;

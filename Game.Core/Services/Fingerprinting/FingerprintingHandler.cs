@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Game.Core.Common.Headers;
+using Game.Core.Common.JWT;
 using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Get;
 using MediatR;
@@ -36,9 +37,9 @@ public class FingerprintingHandler : IRequestHandler<FingerprintingCommand, Unit
         }
 
         var token = handler.ReadJwtToken(jwt);
-        var jti = token.Claims.FirstOrDefault(c => c.Type == "jti")?.Value;
-
-        var getSessionQuery = new GetSessionQuery(s => s.JTI == jti);
+        var jti = token.Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
+        //06f708b9-584c-4baa-b39f-51046aa73944
+        var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
         var session = await _mediator.Send(getSessionQuery);
 
         if (session is null || !session.Fingerprint.Equals(fingerprint))
