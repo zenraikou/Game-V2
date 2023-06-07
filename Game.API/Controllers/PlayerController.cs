@@ -62,7 +62,7 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
-    public async Task<ActionResult<PlayerResponse>> Put(Guid id, PlayerRequest request)
+    public async Task<IActionResult> Put(Guid id, PlayerRequest request)
     {
         var updatePlayerCommand = new UpdatePlayerCommand(id, request);
         await _mediator.Send(updatePlayerCommand);
@@ -73,7 +73,7 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpDelete("{id}")] /* DELETE: {host}/api/delete/player/{id} */
-    public async Task<ActionResult<IActionResult>> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         var deletePlayerCommand = new DeletePlayerCommand(id);
         await _mediator.Send(deletePlayerCommand);

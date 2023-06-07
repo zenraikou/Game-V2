@@ -25,13 +25,7 @@ public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse?>
     {
         var expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression);
         var player = await _unitOfWork.Players.Get(expression);
-
-        if (player is null)
-        {
-            throw new NotFoundException("Player not found.");
-        }
-
-        var response = _mapper.Map<PlayerResponse>(player);
+        var response = _mapper.Map<PlayerResponse>(player!);
         return response;
     }
 }

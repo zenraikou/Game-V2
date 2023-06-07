@@ -22,6 +22,7 @@ public class PostSessionHandler : IRequestHandler<PostSessionCommand, SessionRes
         var session = _mapper.Map<Session>(request.Session);
         await _unitOfWork.Sessions.Post(session);
         await _unitOfWork.Save();
+
         var response = _mapper.Map<SessionResponse>(session);
         return response;
     }

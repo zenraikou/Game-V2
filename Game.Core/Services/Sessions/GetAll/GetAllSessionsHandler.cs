@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
@@ -22,8 +23,15 @@ public class GetAllSessionsHandler : IRequestHandler<GetAllSessionsQuery, IEnume
 
     public async Task<IEnumerable<SessionResponse>> Handle(GetAllSessionsQuery request, CancellationToken cancellationToken)
     {
-        var expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression!);
+        Expression<Func<Session, bool>>? expression = null;
+
+        if (request.Expression is not null)
+        {
+            expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression);
+        }
+
         var sessions = await _unitOfWork.Sessions.GetAll(expression);
+
         var response = _mapper.Map<IEnumerable<SessionResponse>>(sessions);
         return response;
     }
