@@ -8,7 +8,6 @@
 @host = https://localhost:7000
 
 ### Register
-# I
 POST {{host}}/api/auth/register
 Content-Type: application/json
 Fingerprint: {{fingerprint}}
@@ -23,7 +22,6 @@ Fingerprint: {{fingerprint}}
 }
 
 ### Login
-# I
 POST {{host}}/api/auth/login
 Content-Type: application/json
 Fingerprint: {{fingerprint}}
