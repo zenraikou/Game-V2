@@ -1,7 +1,6 @@
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Commands;
-using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 
@@ -31,6 +30,7 @@ public class UpdateSessionHandler : IRequestHandler<UpdateSessionCommand, Unit>
 
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();
+
         return await Unit.Task;
     }
 }

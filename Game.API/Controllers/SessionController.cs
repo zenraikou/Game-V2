@@ -68,6 +68,10 @@ public class SessionController : ControllerBase
         return CreatedAtAction(nameof(Get), new { response.Id }, response);
     }
 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpPut("{id}")] /* PUT: {host}/api/session/{id} */
     public async Task<IActionResult> Put(Guid id, SessionRequest request)
     {

@@ -1,7 +1,6 @@
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Commands;
-using MapsterMapper;
 using MediatR;
 
 namespace Game.Core.Services.Sessions.Handlers;

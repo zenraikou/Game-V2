@@ -85,7 +85,7 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [HttpDelete("{id}")] /* DELETE: {host}/api/delete/player/{id} */
+    [HttpDelete("{id}")] /* DELETE: {host}/api/player/{id} */
     public async Task<IActionResult> Delete(Guid id)
     {
         var deletePlayerCommand = new DeletePlayerCommand(id);

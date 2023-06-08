@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
@@ -6,6 +5,7 @@ using Game.Core.Services.Sessions.Queries;
 using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
+using System.Linq.Expressions;
 
 namespace Game.Core.Services.Sessions.Handlers;
 
