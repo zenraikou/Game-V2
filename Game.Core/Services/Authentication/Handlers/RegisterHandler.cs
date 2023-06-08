@@ -1,6 +1,4 @@
 using Game.Contracts.Authentication;
-using Game.Contracts.Generator.GenerateJWT;
-using Game.Contracts.Generator.GenerateSession;
 using Game.Contracts.Player;
 using Game.Contracts.Session;
 using Game.Core.Exceptions;
@@ -38,19 +36,17 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
         var postPlayerCommand = new PostPlayerCommand(playerRequest);
         playerResponse = await _mediator.Send(postPlayerCommand);
 
-        var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
-        var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
-        var generateJWTResponse = await _mediator.Send(generateJWTCommand);
+        var generateJWTCommand = new GenerateJWTCommand(playerResponse.Id.ToString(), playerResponse.Role);
+        var jwt = await _mediator.Send(generateJWTCommand);
 
-        var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
-        var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-        var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+        var generateSessionCommand = new GenerateSessionCommand(jwt);
+        var sessionResponse = await _mediator.Send(generateSessionCommand);
 
-        var sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
         var postSessionCommand = new PostSessionCommand(sessionRequest);
         await _mediator.Send(postSessionCommand);
 
-        var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
+        var response = new AuthenticationResponse { JWT = jwt };
         return response;
     }
 }

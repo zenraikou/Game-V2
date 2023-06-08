@@ -1,6 +1,5 @@
-using Game.Contracts.Generator.GenerateJWT;
 using MediatR;
 
 namespace Game.Core.Services.Authentication.Commands;
 
-public record GenerateJWTCommand(GenerateJWTRequest GenerateJWT) : IRequest<GenerateJWTResponse>;
+public record GenerateJWTCommand(string Id, string Role, string? JTI = null) : IRequest<string>;

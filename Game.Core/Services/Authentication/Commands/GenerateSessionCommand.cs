@@ -1,6 +1,6 @@
-using Game.Contracts.Generator.GenerateSession;
+using Game.Contracts.Session;
 using MediatR;
 
 namespace Game.Core.Services.Authentication.Commands;
 
-public record GenerateSessionCommand(GenerateSessionRequest GenerateSession) : IRequest<GenerateSessionResponse>;
+public record GenerateSessionCommand(string JWT) : IRequest<SessionResponse>;

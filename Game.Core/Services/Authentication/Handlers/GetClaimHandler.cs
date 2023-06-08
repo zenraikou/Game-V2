@@ -1,4 +1,3 @@
-using Game.Core.Common.Constants;
 using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Queries;
 using MediatR;
@@ -17,15 +16,13 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, string>
 
     public async Task<string> Handle(GetClaimQuery request, CancellationToken cancellationToken)
     {
-        var handler = new JwtSecurityTokenHandler();
         var claim = string.Empty;
+        var handler = new JwtSecurityTokenHandler();
 
         if (string.IsNullOrEmpty(request.JWT))
         {
-            var getHeaderQuery = new GetHeaderQuery(HTTPHeaders.Authorization);
-            var header = await _mediator.Send(getHeaderQuery);
-
-            var jwt = header?.Split(' ')[1];
+            var getJWTQuery = new GetJWTQuery();
+            var jwt = await _mediator.Send(getJWTQuery);
 
             claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)!.Value;
         }

@@ -33,7 +33,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
 
-        if (playerResponse is null || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
+        if (!BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
         {
             throw new UnauthorizedException("Invalid credentials.");
         }
@@ -53,19 +53,17 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
             await _mediator.Send(deleteSessionCommand);
         }
 
-        var generateJWTRequest = _mapper.Map<GenerateJWTRequest>(playerResponse);
-        var generateJWTCommand = new GenerateJWTCommand(generateJWTRequest);
-        var generateJWTResponse = await _mediator.Send(generateJWTCommand);
+        var generateJWTCommand = new GenerateJWTCommand(playerResponse.Id.ToString(), playerResponse.Role);
+        var jwt = await _mediator.Send(generateJWTCommand);
 
-        var generateSessionRequest = _mapper.Map<GenerateSessionRequest>(generateJWTResponse);
-        var generateSessionCommand = new GenerateSessionCommand(generateSessionRequest);
-        var generateSessionResponse = await _mediator.Send(generateSessionCommand);
+        var generateSessionCommand = new GenerateSessionCommand(jwt);
+        sessionResponse = await _mediator.Send(generateSessionCommand);
 
-        sessionRequest = _mapper.Map<SessionRequest>(generateSessionResponse);
+        sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
         var postSessionCommand = new PostSessionCommand(sessionRequest);
         await _mediator.Send(postSessionCommand);
 
-        var response = new AuthenticationResponse { JWT = generateJWTResponse.JWT };
+        var response = new AuthenticationResponse { JWT = jwt };
         return response;
     }
 }

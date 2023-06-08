@@ -1,9 +1,7 @@
-using Game.Contracts.Generator.GenerateJWT;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Constants;
 using Game.Core.Common.Settings;
 using Game.Core.Services.Authentication.Commands;
-using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,26 +11,24 @@ using System.Text;
 
 namespace Game.Core.Services.Authentication.Handlers;
 
-public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJWTResponse>
+public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, string>
 {
     private readonly ITime _time;
     private readonly JWTSettings _jwtSettings;
-    private readonly IMapper _mapper;
 
-    public GenerateJWTHandler(ITime time, IOptions<JWTSettings> jwtSettings, IMapper mapper)
+    public GenerateJWTHandler(ITime time, IOptions<JWTSettings> jwtSettings)
     {
         _time = time;
         _jwtSettings = jwtSettings.Value;
-        _mapper = mapper;
     }
 
-    public async Task<GenerateJWTResponse> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(GenerateJWTCommand request, CancellationToken cancellationToken)
     {
         var claims = new Claim[]
         {
-            new Claim(JWTClaims.JTI, request.GenerateJWT.JTI ?? Guid.NewGuid().ToString()),
-            new Claim(JWTClaims.Id, request.GenerateJWT.Id),
-            new Claim(JWTClaims.Role, request.GenerateJWT.Role)
+            new Claim(JWTClaims.JTI, request.JTI ?? Guid.NewGuid().ToString()),
+            new Claim(JWTClaims.Id, request.Id),
+            new Claim(JWTClaims.Role, request.Role)
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
@@ -45,9 +41,10 @@ public class GenerateJWTHandler : IRequestHandler<GenerateJWTCommand, GenerateJW
             audience: _jwtSettings.Audience,
             expires: _time.Now.AddMinutes(_jwtSettings.Expiry));
 
-        var jwt = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        var handler = new JwtSecurityTokenHandler();
+        var jwt = handler.WriteToken(securityToken);
 
-        var response = new GenerateJWTResponse { JWT = jwt };
+        var response = jwt;
         return await Task.FromResult(response);
     }
 }
