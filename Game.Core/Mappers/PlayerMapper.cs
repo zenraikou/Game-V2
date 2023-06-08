@@ -1,7 +1,8 @@
-using Game.Contracts.Generator.GenerateJWT;
 using Game.Contracts.Player;
 using Game.Domain.Entities;
 using Mapster;
+
+using Cypher = BCrypt.Net.BCrypt;
 
 namespace Game.Core.Mappings;
 
@@ -16,13 +17,18 @@ public class PlayerMapper : IRegister
             .Map(dest => dest.PasswordHash, src => src.PasswordHash);
 
         config.ForType<PlayerRequest, Player>()
-            .Map(dest => dest.PasswordHash, src => src.Password);
+            .Map(dest => dest.PasswordHash, src => PasswordHash(src.Password));
 
         config.ForType<PlayerRequest, PlayerResponse>()
-            .Map(dest => dest.PasswordHash, src => src.Password);
+            .Map(dest => dest.PasswordHash, src => PasswordHash(src.Password));
 
         config.ForType<PlayerResponse, PlayerRequest>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Password, src => src.PasswordHash);
+    }
+
+    private string PasswordHash(string password)
+    {
+        return Cypher.HashPassword(password);
     }
 }

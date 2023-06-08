@@ -1,7 +1,6 @@
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Game.Core.Services.Players.Commands;
-using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 
@@ -12,7 +11,7 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerCommand, Unit>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdatePlayerHandler(ISender mediator, IUnitOfWork unitOfWork, IMapper mapper)
+    public UpdatePlayerHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -27,7 +26,7 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerCommand, Unit>
             throw new NotFoundException("Player not found.");
         }
 
-        player = _mapper.Map<Player>(request.Player);
+        _mapper.Map(request.Player, player);
 
         await _unitOfWork.Players.Update(player);
         await _unitOfWork.Save();

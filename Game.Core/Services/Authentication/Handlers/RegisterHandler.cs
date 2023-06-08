@@ -34,8 +34,6 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
             throw new BadRequestException("ID is not available.");
         }
 
-        request.Register.Password = BCrypt.Net.BCrypt.HashPassword(request.Register.Password);
-
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
         var postPlayerCommand = new PostPlayerCommand(playerRequest);
         playerResponse = await _mediator.Send(postPlayerCommand);
