@@ -26,9 +26,9 @@ Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
 
 {
-    "id": "01010101-0101-0101-0101-010101010101",
+    "id": "{{token}}",
     "fingerprint": "Browser",
-    "expiry": "2023-06-15T04:46:54.0510887"
+    "expiry": "2022-01-01T00:00:00.8696969"
 }
 
 ### PUT
@@ -38,9 +38,9 @@ Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
 
 {
-    "id": "01010101-0101-0101-0101-010101010101",
-    "fingerprint": "Browser",
-    "expiry": "2023-06-15T04:46:54.0510887"
+    "id": "{{token}}",
+    "fingerprint": "Android",
+    "expiry": "2028-01-01T00:00:00.6969698"
 }
 
 ### DELETE

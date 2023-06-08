@@ -27,7 +27,7 @@ public class UpdateSessionHandler : IRequestHandler<UpdateSessionCommand, Unit>
             throw new NotFoundException("Session not found.");
         }
 
-        session = _mapper.Map<Session>(request.Session);
+        _mapper.Map(request.Session, session);
 
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();

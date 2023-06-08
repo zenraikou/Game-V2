@@ -1,6 +1,7 @@
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
+using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Queries;
 using Game.Domain.Entities;
 using MapsterMapper;
@@ -25,7 +26,13 @@ public class GetSessionHandler : IRequestHandler<GetSessionQuery, SessionRespons
     {
         var expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression);
         var session = await _unitOfWork.Sessions.Get(expression);
-        var response = _mapper.Map<SessionResponse>(session!);
+
+        if (session == null)
+        {
+            throw new NotFoundException("Session not found.");
+        }
+
+        var response = _mapper.Map<SessionResponse>(session);
         return response;
     }
 }
