@@ -65,7 +65,7 @@ public class SessionController : ControllerBase
         var response = await _mediator.Send(postSessionCommand);
         
         _logger.LogInformation("201 Created");
-        return CreatedAtAction(nameof(Get), new { Id = response.Id }, response);
+        return CreatedAtAction(nameof(Get), new { response.Id }, response);
     }
 
     [HttpPut("{id}")] /* PUT: {host}/api/session/{id} */

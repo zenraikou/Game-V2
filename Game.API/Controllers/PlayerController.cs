@@ -65,7 +65,7 @@ public class PlayerController : ControllerBase
         var response = await _mediator.Send(postPlayerCommand);
 
         _logger.LogInformation("201 Created");
-        return CreatedAtAction(nameof(Get), new { Id = response.Id }, response);
+        return CreatedAtAction(nameof(Get), new { response.Id }, response);
     }
 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
