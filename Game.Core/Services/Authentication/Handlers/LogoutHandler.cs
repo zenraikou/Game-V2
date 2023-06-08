@@ -23,16 +23,16 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, Unit>
 
     public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellatioSnToken)
     {
+        var getFingerprintQuery = new GetFingerprintQuery();
+        var fingerprint = await _mediator.Send(getFingerprintQuery);
+
         var getClaimQuery = new GetClaimQuery(c => c.Type == JWTClaims.JTI);
         var jti = await _mediator.Send(getClaimQuery);
-
-        var getHeaderQuery = new GetHeaderQuery(HTTPHeaders.Fingerprint);
-        var fingerprint = await _mediator.Send(getHeaderQuery);
 
         var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
         var sessionResponse = await _mediator.Send(getSessionQuery);
 
-        if (sessionResponse is null || sessionResponse.Fingerprint != fingerprint)
+        if (sessionResponse == null || sessionResponse.Fingerprint != fingerprint)
         {
             throw new UnauthorizedException("Access denied.");
         }

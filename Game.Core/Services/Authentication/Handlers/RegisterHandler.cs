@@ -27,7 +27,7 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
 
-        if (playerResponse is not null)
+        if (playerResponse != null)
         {
             throw new BadRequestException("ID is not available.");
         }

@@ -9,19 +9,17 @@ namespace Game.Core.Services.Sessions.Handlers;
 public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public DeleteSessionHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public DeleteSessionHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
         var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
 
-        if (session is null)
+        if (session == null)
         {
             throw new NotFoundException("Session not found.");
         }

@@ -21,7 +21,7 @@ public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerCommand, Unit>
     {
         var player = await _unitOfWork.Players.Get(p => p.Id == request.Id);
 
-        if (player is null)
+        if (player == null)
         {
             throw new NotFoundException("Player not found.");
         }

@@ -20,7 +20,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         IQueryable<T> query = db.AsQueryable();
 
-        if (expression is not null)
+        if (expression != null)
         {
             query = query.Where(expression);
         }

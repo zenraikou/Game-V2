@@ -26,7 +26,7 @@ public class GetAllSessionsHandler : IRequestHandler<GetAllSessionsQuery, IEnume
     {
         Expression<Func<Session, bool>>? expression = null;
 
-        if (request.Expression is not null)
+        if (request.Expression != null)
         {
             expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression);
         }

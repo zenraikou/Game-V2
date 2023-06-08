@@ -39,6 +39,6 @@ public class FingerprintingMiddleware : IMiddleware
     public bool EndpointHasAttribute<T>(HttpContext context) where T : class
     {
         var endpoint = context.GetEndpoint();
-        return endpoint?.Metadata.GetMetadata<T>() is not null;
+        return endpoint?.Metadata.GetMetadata<T>() != null;
     }
 }

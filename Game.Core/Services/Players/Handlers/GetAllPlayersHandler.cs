@@ -26,7 +26,7 @@ public class GetAllPlayersHandler : IRequestHandler<GetAllPlayersQuery, IEnumera
     {
         Expression<Func<Player, bool>>? expression = null;
 
-        if (request.Expression is not null)
+        if (request.Expression != null)
         {
             expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression);
         }

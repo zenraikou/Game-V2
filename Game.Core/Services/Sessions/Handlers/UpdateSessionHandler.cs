@@ -22,7 +22,7 @@ public class UpdateSessionHandler : IRequestHandler<UpdateSessionCommand, Unit>
     {
         var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
 
-        if (session is null)
+        if (session == null)
         {
             throw new NotFoundException("Session not found.");
         }

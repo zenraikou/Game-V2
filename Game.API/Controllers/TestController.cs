@@ -38,7 +38,7 @@ public class TestController : ControllerBase
         var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
         var session = await _mediator.Send(getSessionQuery);
 
-        if (session is null)
+        if (session == null)
         {
             return NotFound("Fingerprint not found.");
         }
