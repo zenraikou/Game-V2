@@ -21,31 +21,29 @@ Fingerprint: {{fingerprint}}
 
 ### POST
 POST {{host}}/api/session
+Content-Type: application/json
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
 
 {
-    "handle": "yunyun",
-    "name": "Yunyun",
-    "uniqueName": "yunyun",
-    "email": "yunyun@konosuba.gg",
-    "password": "?Ok4",
-    "role": "session"
+    "id": "01010101-0101-0101-0101-010101010101",
+    "fingerprint": "Browser",
+    "expiry": "2023-06-15T04:46:54.0510887"
 }
 
+### PUT
 PUT {{host}}/api/session/{{id}}
+Content-Type: application/json
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}
 
 {
-    "handle": "wiz",
-    "name": "Wiz",
-    "uniqueName": "wiz",
-    "email": "wiz@konosuba.gg",
-    "password": "?Ok4",
-    "role": "session"
+    "id": "01010101-0101-0101-0101-010101010101",
+    "fingerprint": "Browser",
+    "expiry": "2023-06-15T04:46:54.0510887"
 }
 
+### DELETE
 DELETE {{host}}/api/session/{{id}}
 Authorization: Bearer {{token}}
 Fingerprint: {{fingerprint}}

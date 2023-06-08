@@ -1,8 +1,8 @@
 ### Replace placeholders
 # id = GUID
-@id = acc61e12-ac9b-4558-84bc-2ea948c6a6e8
+@id = placeholder
 # token = JWT
-@token = eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4YWVhY2VkMi05YzY2LTQzMDMtYjdhMS1jM2MzZmIzMzQ0MDkiLCJpZCI6IjU3Y2Q4NjBkLTk4YmMtNGNhOS05YjA1LTg1ZDlkNWVjMjA1NSIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTY4NjE5OTI2MywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzAwMCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcwMDAifQ.fKgRBLys1jvdrN1W64RGug_wDBJ1iIdf23unEXURYkMv72paFQD-kdpQfaMBohSFY7BMoSKPlC11-ILoJRJdEw
+@token = placeholder
 # fingerprint = Device Fingerprint
 @fingerprint = Browser
 
