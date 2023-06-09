@@ -76,13 +76,17 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
     public async Task<IActionResult> Put(Guid id, PlayerRequest request)
     {
-        var updatePlayerCommand = new PutPlayerCommand(id, request);
-        await _mediator.Send(updatePlayerCommand);
+        var putPlayerCommand = new PutPlayerCommand(id, request);
+        await _mediator.Send(putPlayerCommand);
 
         _logger.LogInformation("204 No Content");
         return NoContent();
     }
 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [HttpPatch("{id}")] /* PATCH: {host}/api/player/{id} */
     public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<PlayerRequest> jsonPatchDocument)
     {

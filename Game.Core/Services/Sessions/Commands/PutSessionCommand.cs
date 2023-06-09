@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Game.Core.Services.Sessions.Commands;
 
-public record UpdateSessionCommand(Guid Id, SessionRequest Session) : IRequest<Unit>;
+public record PutSessionCommand(Guid Id, SessionRequest Session) : IRequest<Unit>;

@@ -4,6 +4,7 @@ using Game.Core.Services.Sessions.Commands;
 using Game.Core.Services.Sessions.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -75,8 +76,22 @@ public class SessionController : ControllerBase
     [HttpPut("{id}")] /* PUT: {host}/api/session/{id} */
     public async Task<IActionResult> Put(Guid id, SessionRequest request)
     {
-        var updateSessionCommand = new UpdateSessionCommand(id, request);
-        await _mediator.Send(updateSessionCommand);
+        var putSessionCommand = new PutSessionCommand(id, request);
+        await _mediator.Send(putSessionCommand);
+
+        _logger.LogInformation("204 No Content");
+        return NoContent();
+    }
+
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpPatch("{id}")] /* PATCH: {host}/api/session/{id} */
+    public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<SessionRequest> jsonPatchDocument)
+    {
+        var patchSessionCommand = new PatchSessionCommand(id, jsonPatchDocument);
+        await _mediator.Send(patchSessionCommand);
 
         _logger.LogInformation("204 No Content");
         return NoContent();

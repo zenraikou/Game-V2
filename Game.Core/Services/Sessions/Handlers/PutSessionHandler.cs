@@ -6,18 +6,18 @@ using MediatR;
 
 namespace Game.Core.Services.Sessions.Handlers;
 
-public class UpdateSessionHandler : IRequestHandler<UpdateSessionCommand, Unit>
+public class PutSessionHandler : IRequestHandler<PutSessionCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdateSessionHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public PutSessionHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
-    public async Task<Unit> Handle(UpdateSessionCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(PutSessionCommand request, CancellationToken cancellationToken)
     {
         var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
 

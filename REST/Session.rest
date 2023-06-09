@@ -43,6 +43,25 @@ Fingerprint: {{fingerprint}}
     "expiry": "2028-01-01T00:00:00.6969698"
 }
 
+### PATCH
+PATCH {{host}}/api/session/{{id}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
+
+[
+    {
+        "op": "replace",
+        "path": "/fingerprint",
+        "value": "iOS"
+    },
+    {
+        "op": "replace",
+        "path": "/expiry",
+        "value": "2030-01-01T00:00:00.6968969"
+    }
+]
+
 ### DELETE
 DELETE {{host}}/api/session/{{id}}
 Authorization: Bearer {{token}}
