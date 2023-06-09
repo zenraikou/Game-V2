@@ -4,6 +4,7 @@ using Game.Core.Services.Players.Commands;
 using Game.Core.Services.Players.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -75,8 +76,18 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
     public async Task<IActionResult> Put(Guid id, PlayerRequest request)
     {
-        var updatePlayerCommand = new UpdatePlayerCommand(id, request);
+        var updatePlayerCommand = new PutPlayerCommand(id, request);
         await _mediator.Send(updatePlayerCommand);
+
+        _logger.LogInformation("204 No Content");
+        return NoContent();
+    }
+
+    [HttpPatch("{id}")] /* PATCH: {host}/api/player/{id} */
+    public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<PlayerRequest> jsonPatchDocument)
+    {
+        var patchPlayerCommand = new PatchPlayerCommand(id, jsonPatchDocument);
+        await _mediator.Send(patchPlayerCommand);
 
         _logger.LogInformation("204 No Content");
         return NoContent();

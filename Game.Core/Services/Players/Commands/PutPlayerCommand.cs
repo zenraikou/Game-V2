@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Game.Core.Services.Players.Commands;
 
-public record UpdatePlayerCommand(Guid Id, PlayerRequest Player) : IRequest<Unit>;
+public record PutPlayerCommand(Guid Id, PlayerRequest Player) : IRequest<Unit>;

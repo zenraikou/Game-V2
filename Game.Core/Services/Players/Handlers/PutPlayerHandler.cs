@@ -6,18 +6,18 @@ using MediatR;
 
 namespace Game.Core.Services.Players.Handlers;
 
-public class UpdatePlayerHandler : IRequestHandler<UpdatePlayerCommand, Unit>
+public class PutPlayerHandler : IRequestHandler<PutPlayerCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdatePlayerHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public PutPlayerHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
-    public async Task<Unit> Handle(UpdatePlayerCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(PutPlayerCommand request, CancellationToken cancellationToken)
     {
         var player = await _unitOfWork.Players.Get(p => p.Id == request.Id);
 

@@ -49,6 +49,45 @@ Fingerprint: {{fingerprint}}
     "role": "Player"
 }
 
+### PATCH
+PATCH {{host}}/api/player/{{id}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Fingerprint: {{fingerprint}}
+
+[
+    {
+        "op": "replace",
+        "path": "/handle",
+        "value": "vanir"
+    },
+    {
+        "op": "replace",
+        "path": "/name",
+        "value": "Vanir"
+    },
+    {
+        "op": "replace",
+        "path": "/uniqueName",
+        "value": "vanir"
+    },
+    {
+        "op": "replace",
+        "path": "/email",
+        "value": "vanir@konosuba.gg"
+    },
+    {
+        "op": "replace",
+        "path": "/password",
+        "value": "?Ok4"
+    },
+    {
+        "op": "replace",
+        "path": "/role",
+        "value": "Player"
+    }
+]
+
 ### DELETE
 DELETE {{host}}/api/player/{{id}}
 Authorization: Bearer {{token}}
