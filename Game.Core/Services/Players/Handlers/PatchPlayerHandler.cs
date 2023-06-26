@@ -2,10 +2,8 @@ using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Core.Exceptions;
 using Game.Core.Services.Players.Commands;
-using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace Game.Core.Services.Players.Handlers;
 

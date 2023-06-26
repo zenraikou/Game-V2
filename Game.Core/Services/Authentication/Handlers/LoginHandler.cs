@@ -1,18 +1,19 @@
+using ErrorOr;
 using Game.Contracts.Authentication;
 using Game.Contracts.Session;
-using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Commands;
 using Game.Core.Services.Authentication.Queries;
 using Game.Core.Services.Players.Queries;
 using Game.Core.Services.Sessions.Commands;
 using Game.Core.Services.Sessions.Queries;
+using Game.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Game.Core.Services.Authentication.Handlers;
 
-public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse>
+public class LoginHandler : IRequestHandler<LoginCommand, ErrorOr<AuthenticationResponse>>
 {
     private readonly ILogger<LoginHandler> _logger;
     private readonly ISender _mediator;
@@ -25,16 +26,16 @@ public class LoginHandler : IRequestHandler<LoginCommand, AuthenticationResponse
         _mapper = mapper;
     }
 
-    public async Task<AuthenticationResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<AuthenticationResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
+        if (playerResponse == null || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
         {
-            throw new UnauthorizedException("Invalid credentials.");
+            return Errors.Authentication.InvalidCredentials;
         }
-        
+
         var getFingerprintQuery = new GetFingerprintQuery();
         var fingerprint = await _mediator.Send(getFingerprintQuery);
 

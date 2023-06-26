@@ -1,17 +1,18 @@
+using ErrorOr;
 using Game.Contracts.Authentication;
 using Game.Contracts.Player;
 using Game.Contracts.Session;
-using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Commands;
 using Game.Core.Services.Players.Commands;
 using Game.Core.Services.Players.Queries;
 using Game.Core.Services.Sessions.Commands;
+using Game.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 
 namespace Game.Core.Mediators.Authentication.Handlers;
 
-public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationResponse>
+public class RegisterHandler : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResponse>>
 {
     private readonly ISender _mediator;
     private readonly IMapper _mapper;
@@ -22,14 +23,14 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, AuthenticationRe
         _mapper = mapper;
     }
 
-    public async Task<AuthenticationResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<AuthenticationResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
         var playerResponse = await _mediator.Send(getPlayerQuery);
 
         if (playerResponse != null)
         {
-            throw new BadRequestException("ID is not available.");
+            return Errors.Authentication.InvalidCredentials;
         }
 
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);

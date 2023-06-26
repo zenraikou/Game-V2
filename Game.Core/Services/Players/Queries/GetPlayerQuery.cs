@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Game.Core.Services.Players.Queries;
 
-public record GetPlayerQuery(Expression<Func<PlayerRequest, bool>> Expression) : IRequest<PlayerResponse>;
+public record GetPlayerQuery(Expression<Func<PlayerRequest, bool>> Expression) : IRequest<PlayerResponse?>;

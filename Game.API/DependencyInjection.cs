@@ -11,7 +11,7 @@ public static class DependencyInjection
         services.AddControllers().AddNewtonsoftJson();
         services.AddRouting(options => options.LowercaseUrls = true);
 
-        services.AddExceptionHandling();
+        // services.AddExceptionHandling();
         services.AddFingerprinting();
         services.AddAuthentication().AddJwtBearer(options =>
         {
@@ -32,7 +32,8 @@ public static class DependencyInjection
     {
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseExceptionHandling();
+        //app.UseExceptionHandling();
+        app.UseExceptionHandler("/error");
         app.UseFingerprinting();
         app.UseAuthentication();
         app.UseAuthorization();

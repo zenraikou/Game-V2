@@ -9,13 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Game.API.Controllers;
 
 [Fingerprinting]
-[ApiController]
 [Route("api/auth")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : APIController
 {
-    private readonly IMediator _mediator;
+    private readonly ISender _mediator;
 
-    public AuthenticationController(IMediator mediator)
+    public AuthenticationController(ISender mediator)
     {
         _mediator = mediator;
     }
@@ -23,11 +22,14 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("register")]
-    public async Task<ActionResult<AuthenticationResponse>> Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
         var registerCommand = new RegisterCommand(request);
         var response = await _mediator.Send(registerCommand);
-        return Ok(response);
+
+        return response.Match(
+            response => Ok(response),
+            errors => Problem(errors));
     }
 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
