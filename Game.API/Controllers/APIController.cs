@@ -1,4 +1,5 @@
 using ErrorOr;
+using Game.API.Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
@@ -7,8 +8,10 @@ namespace Game.API.Controllers;
 public class APIController : ControllerBase
 {
     [Route("error")]
-    public IActionResult Problem(List<Error> errors)
+    protected IActionResult Problem(List<Error> errors)
     {
+        HttpContext.Items[HTTPItem.Errors] = errors;
+
         var firstError = errors[0];
 
         var code = firstError.Type switch

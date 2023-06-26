@@ -1,4 +1,6 @@
+using Game.API.Common.Errors;
 using Game.API.Extensions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -12,6 +14,7 @@ public static class DependencyInjection
         services.AddRouting(options => options.LowercaseUrls = true);
 
         // services.AddExceptionHandling();
+        services.AddSingleton<ProblemDetailsFactory, GameProblemDetailsFactory>();
         services.AddFingerprinting();
         services.AddAuthentication().AddJwtBearer(options =>
         {

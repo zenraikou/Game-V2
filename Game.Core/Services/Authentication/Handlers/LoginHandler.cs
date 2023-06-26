@@ -29,9 +29,16 @@ public class LoginHandler : IRequestHandler<LoginCommand, ErrorOr<Authentication
     public async Task<ErrorOr<AuthenticationResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
-        var playerResponse = await _mediator.Send(getPlayerQuery);
+        var result = await _mediator.Send(getPlayerQuery);
 
-        if (playerResponse == null || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
+        if (result.IsError)
+        {
+            return Errors.Authentication.InvalidCredentials;
+        }
+
+        var playerResponse = result.Value;
+
+        if (!BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
         {
             return Errors.Authentication.InvalidCredentials;
         }

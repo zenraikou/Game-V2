@@ -26,16 +26,16 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, ErrorOr<Authenti
     public async Task<ErrorOr<AuthenticationResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
-        var playerResponse = await _mediator.Send(getPlayerQuery);
+        var result = await _mediator.Send(getPlayerQuery);
 
-        if (playerResponse != null)
+        if (!result.IsError)
         {
             return Errors.Authentication.InvalidCredentials;
         }
 
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
         var postPlayerCommand = new PostPlayerCommand(playerRequest);
-        playerResponse = await _mediator.Send(postPlayerCommand);
+        var playerResponse = await _mediator.Send(postPlayerCommand);
 
         var generateJWTCommand = new GenerateJWTCommand(playerResponse.Id.ToString(), playerResponse.Role);
         var jwt = await _mediator.Send(generateJWTCommand);

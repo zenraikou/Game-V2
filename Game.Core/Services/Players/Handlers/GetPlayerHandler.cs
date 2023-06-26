@@ -1,15 +1,16 @@
+using ErrorOr;
 using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Exceptions;
 using Game.Core.Services.Players.Queries;
+using Game.Domain.Common.Errors;
 using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 
 namespace Game.Core.Services.Players.Handlers;
 
-public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse?>
+public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, ErrorOr<PlayerResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -22,11 +23,17 @@ public class GetPlayerHandler : IRequestHandler<GetPlayerQuery, PlayerResponse?>
         _expressionMapper = expressionMapper;
     }
 
-    public async Task<PlayerResponse?> Handle(GetPlayerQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<PlayerResponse>> Handle(GetPlayerQuery request, CancellationToken cancellationToken)
     {
         var expression = _expressionMapper.MapExpression<PlayerRequest, Player>(request.Expression);
         var player = await _unitOfWork.Players.Get(expression);
-        var response = _mapper.Map<PlayerResponse>(player!);
+
+        if (player == null)
+        {
+            return Errors.Player.NotFound;
+        }
+
+        var response = _mapper.Map<PlayerResponse>(player);
         return response;
     }
 }
