@@ -37,11 +37,11 @@ public class LoginHandler : IRequestHandler<LoginCommand, ErrorOr<Authentication
 
         var fingerprint = await _mediator.Send(new GetFingerprintQuery());
 
-        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Fingerprint == fingerprint));
+        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Fingerprint == fingerprint.Value));
 
-        if (sessionResponse != null)
+        if (!sessionResponse.IsError)
         {
-            await _mediator.Send(new DeleteSessionCommand(sessionResponse.Id));
+            await _mediator.Send(new DeleteSessionCommand(sessionResponse.Value.Id));
         }
 
         var jwt = await _mediator.Send(new GenerateJWTCommand(playerResponse.Value.Id.ToString(), playerResponse.Value.Role));

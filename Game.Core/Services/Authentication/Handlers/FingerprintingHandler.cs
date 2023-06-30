@@ -24,12 +24,12 @@ public class FingerprintingHandler : IRequestHandler<FingerprintingCommand, Erro
         var fingerprint = await _mediator.Send(new GetFingerprintQuery());
 
         var handler = new JwtSecurityTokenHandler();
-        var token = handler.ReadJwtToken(jwt);
+        var token = handler.ReadJwtToken(jwt.Value);
         var jti = token.Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
 
-        var session = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti)));
+        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti)));
 
-        if (session == null || session.Fingerprint != fingerprint)
+        if (sessionResponse.Value.Fingerprint != fingerprint.Value)
         {
             return Errors.Authorization.Unauthorized;
         }

@@ -26,9 +26,9 @@ public class LogoutHandler : IRequestHandler<LogoutCommand, ErrorOr<Success>>
     {
         var fingerprint = await _mediator.Send(new GetFingerprintQuery());
         var jti = await _mediator.Send(new GetClaimQuery(c => c.Type == JWTClaims.JTI));
-        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti)));
+        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti.Value)));
 
-        if (sessionResponse == null || sessionResponse.Fingerprint != fingerprint)
+        if (sessionResponse.Value.Fingerprint != fingerprint.Value)
         {
             return Errors.Authorization.Unauthorized;
         }

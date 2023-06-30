@@ -24,7 +24,7 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, ErrorOr<string>>
         {
             var jwt = await _mediator.Send(new GetJWTQuery());
 
-            claim = handler.ReadJwtToken(jwt).Claims.FirstOrDefault(request.Expression)?.Value;
+            claim = handler.ReadJwtToken(jwt.Value).Claims.FirstOrDefault(request.Expression)?.Value;
         }
         else
         {

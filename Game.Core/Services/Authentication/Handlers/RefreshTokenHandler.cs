@@ -32,17 +32,17 @@ public record RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, ErrorOr
         var role = await _mediator.Send(new GetClaimQuery(c => c.Type == JWTClaims.Role));
 
         var expiry = await _mediator.Send(new GetClaimQuery(c => c.Type == JWTClaims.Expiry));
-        var expiryUnix = long.Parse(expiry);
+        var expiryUnix = long.Parse(expiry.Value);
         var expiryUtc = DateTimeOffset.FromUnixTimeSeconds(expiryUnix).UtcDateTime;
 
-        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti)));
+        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti.Value)));
 
-        if (sessionResponse == null || sessionResponse.Fingerprint != fingerprint || _time.Now <= expiryUtc || _time.Now >= sessionResponse.Expiry)
+        if (sessionResponse.Value.Fingerprint != fingerprint.Value || _time.Now <= expiryUtc || _time.Now >= sessionResponse.Value.Expiry)
         {
             return Errors.Authorization.Unauthorized;
         }
 
-        var jwt = await _mediator.Send(new GenerateJWTCommand(id, role, jti));
+        var jwt = await _mediator.Send(new GenerateJWTCommand(id.Value, role.Value, jti.Value));
 
         var response = new AuthenticationResponse { JWT = jwt };
         return response;

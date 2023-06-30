@@ -11,9 +11,8 @@ namespace Game.API.Controllers;
 
 [Authorize]
 [Fingerprinting]
-[ApiController]
 [Route("api/[controller]")]
-public class TestController : ControllerBase
+public class TestController : APIController
 {
     private readonly IMediator _mediator;
 
@@ -30,19 +29,15 @@ public class TestController : ControllerBase
     }
 
     [HttpGet("session")]
-    public async Task<ActionResult<Session>> Session()
+    public async Task<IActionResult> Session()
     {
         var jwt = Request.Headers[HTTPHeaders.Authorization].ToString().Split(' ')[1];
         var jti = new JwtSecurityTokenHandler().ReadJwtToken(jwt).Claims.FirstOrDefault(c => c.Type == JWTClaims.JTI)!.Value;
 
-        var getSessionQuery = new GetSessionQuery(s => s.Id == Guid.Parse(jti));
-        var session = await _mediator.Send(getSessionQuery);
+        var response = await _mediator.Send(new GetSessionQuery(s => s.Id == Guid.Parse(jti)));
 
-        if (session == null)
-        {
-            return NotFound("Fingerprint not found.");
-        }
-
-        return Ok(session);
+        return response.Match(
+            response => Ok(response),
+            errors => Problem(errors));
     }
 }
