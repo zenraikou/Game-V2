@@ -1,7 +1,6 @@
 using Game.API.Attributes;
 using Game.Core.Common.Constants;
 using Game.Core.Services.Sessions.Queries;
-using Game.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
