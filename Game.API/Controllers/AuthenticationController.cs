@@ -35,11 +35,14 @@ public class AuthenticationController : APIController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("login")]
-    public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
+    public async Task<IActionResult> Login(LoginRequest request)
     {
         var loginCommand = new LoginCommand(request);
         var response = await _mediator.Send(loginCommand);
-        return Ok(response);
+
+        return response.Match(
+            response => Ok(response), 
+            errors => Problem(errors));
     }
 
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

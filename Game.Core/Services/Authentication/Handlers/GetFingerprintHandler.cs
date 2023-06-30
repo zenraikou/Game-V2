@@ -1,12 +1,13 @@
+using ErrorOr;
 using Game.Core.Common.Constants;
-using Game.Core.Exceptions;
 using Game.Core.Services.Authentication.Queries;
+using Game.Domain.Common.Errors;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace Game.Core.Services.Authentication.Handlers;
 
-public class GetFingerprintHandler : IRequestHandler<GetFingerprintQuery, string>
+public class GetFingerprintHandler : IRequestHandler<GetFingerprintQuery, ErrorOr<string>>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -15,13 +16,13 @@ public class GetFingerprintHandler : IRequestHandler<GetFingerprintQuery, string
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<string> Handle(GetFingerprintQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<string>> Handle(GetFingerprintQuery request, CancellationToken cancellationToken)
     {
         var fingerprint = _httpContextAccessor.HttpContext?.Request.Headers[HTTPHeaders.Fingerprint].ToString();
 
         if (string.IsNullOrEmpty(fingerprint))
         {
-            throw new UnauthorizedException("Access denied.");
+            return Errors.Authorization.Unauthorized;
         }
 
         return await Task.FromResult(fingerprint);

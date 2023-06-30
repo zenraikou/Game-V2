@@ -1,7 +1,6 @@
 using FluentValidation;
 using Game.Domain.Entities;
 
-
 namespace Game.Core.Validators;
 
 public class PlayerValidator : AbstractValidator<Player>
@@ -12,5 +11,4 @@ public class PlayerValidator : AbstractValidator<Player>
             .NotEmpty()
             .Length(3, 30);
     }
-
 }

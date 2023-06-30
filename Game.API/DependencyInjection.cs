@@ -13,8 +13,7 @@ public static class DependencyInjection
         services.AddControllers().AddNewtonsoftJson();
         services.AddRouting(options => options.LowercaseUrls = true);
 
-        // services.AddExceptionHandling();
-        services.AddSingleton<ProblemDetailsFactory, GameProblemDetailsFactory>();
+        //services.AddSingleton<ProblemDetailsFactory, GameProblemDetailsFactory>();
         services.AddFingerprinting();
         services.AddAuthentication().AddJwtBearer(options =>
         {
@@ -35,7 +34,6 @@ public static class DependencyInjection
     {
         app.UseHttpsRedirection();
         app.UseRouting();
-        //app.UseExceptionHandling();
         app.UseExceptionHandler("/error");
         app.UseFingerprinting();
         app.UseAuthentication();

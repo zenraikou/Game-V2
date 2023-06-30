@@ -25,27 +25,22 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, ErrorOr<Authenti
 
     public async Task<ErrorOr<AuthenticationResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName);
-        var result = await _mediator.Send(getPlayerQuery);
+        var playerResponse = await _mediator.Send(new GetPlayerQuery(p => p.UniqueName == request.Register.UniqueName));
 
-        if (!result.IsError)
+        if (!playerResponse.IsError)
         {
             return Errors.Authentication.InvalidCredentials;
         }
 
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
-        var postPlayerCommand = new PostPlayerCommand(playerRequest);
-        var playerResponse = await _mediator.Send(postPlayerCommand);
+        playerResponse = await _mediator.Send(new PostPlayerCommand(playerRequest));
 
-        var generateJWTCommand = new GenerateJWTCommand(playerResponse.Id.ToString(), playerResponse.Role);
-        var jwt = await _mediator.Send(generateJWTCommand);
+        var jwt = await _mediator.Send(new GenerateJWTCommand(playerResponse.Value.Id.ToString(), playerResponse.Value.Role));
 
-        var generateSessionCommand = new GenerateSessionCommand(jwt);
-        var sessionResponse = await _mediator.Send(generateSessionCommand);
-
+        var sessionResponse = await _mediator.Send(new GenerateSessionCommand(jwt));
         var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-        var postSessionCommand = new PostSessionCommand(sessionRequest);
-        await _mediator.Send(postSessionCommand);
+
+        await _mediator.Send(new PostSessionCommand(sessionRequest));
 
         var response = new AuthenticationResponse { JWT = jwt };
         return response;

@@ -28,45 +28,28 @@ public class LoginHandler : IRequestHandler<LoginCommand, ErrorOr<Authentication
 
     public async Task<ErrorOr<AuthenticationResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var getPlayerQuery = new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName);
-        var result = await _mediator.Send(getPlayerQuery);
+        var playerResponse = await _mediator.Send(new GetPlayerQuery(p => p.UniqueName == request.Login.UniqueName));
 
-        if (result.IsError)
+        if (playerResponse.IsError || !BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.Value.PasswordHash))
         {
             return Errors.Authentication.InvalidCredentials;
         }
 
-        var playerResponse = result.Value;
+        var fingerprint = await _mediator.Send(new GetFingerprintQuery());
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Login.Password, playerResponse.PasswordHash))
-        {
-            return Errors.Authentication.InvalidCredentials;
-        }
-
-        var getFingerprintQuery = new GetFingerprintQuery();
-        var fingerprint = await _mediator.Send(getFingerprintQuery);
-
-        var getSessionQuery = new GetSessionQuery(s => s.Fingerprint == fingerprint);
-        var sessionResponse = await _mediator.Send(getSessionQuery);
-
-        SessionRequest sessionRequest;
+        var sessionResponse = await _mediator.Send(new GetSessionQuery(s => s.Fingerprint == fingerprint));
 
         if (sessionResponse != null)
         {
-            sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-            var deleteSessionCommand = new DeleteSessionCommand(sessionRequest.Id);
-            await _mediator.Send(deleteSessionCommand);
+            await _mediator.Send(new DeleteSessionCommand(sessionResponse.Id));
         }
 
-        var generateJWTCommand = new GenerateJWTCommand(playerResponse.Id.ToString(), playerResponse.Role);
-        var jwt = await _mediator.Send(generateJWTCommand);
+        var jwt = await _mediator.Send(new GenerateJWTCommand(playerResponse.Value.Id.ToString(), playerResponse.Value.Role));
 
-        var generateSessionCommand = new GenerateSessionCommand(jwt);
-        sessionResponse = await _mediator.Send(generateSessionCommand);
+        sessionResponse = await _mediator.Send(new GenerateSessionCommand(jwt));
+        var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
 
-        sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
-        var postSessionCommand = new PostSessionCommand(sessionRequest);
-        await _mediator.Send(postSessionCommand);
+        await _mediator.Send(new PostSessionCommand(sessionRequest));
 
         var response = new AuthenticationResponse { JWT = jwt };
         return response;
