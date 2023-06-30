@@ -1,11 +1,12 @@
+using ErrorOr;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Commands;
+using Game.Domain.Common.Errors;
 using MediatR;
 
 namespace Game.Core.Services.Sessions.Handlers;
 
-public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
+public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, ErrorOr<Deleted>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,18 +15,18 @@ public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand, Unit>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Deleted>> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
         var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
 
         if (session == null)
         {
-            throw new NotFoundException("Session not found.");
+            return Errors.Session.NotFound;
         }
 
         await _unitOfWork.Sessions.Delete(session);
         await _unitOfWork.Save();
 
-        return await Unit.Task;
+        return await Task.FromResult(Result.Deleted);
     }
 }

@@ -1,15 +1,16 @@
+using ErrorOr;
 using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Exceptions;
 using Game.Core.Services.Sessions.Queries;
+using Game.Domain.Common.Errors;
 using Game.Domain.Entities;
 using MapsterMapper;
 using MediatR;
 
 namespace Game.Core.Services.Sessions.Handlers;
 
-public class GetSessionHandler : IRequestHandler<GetSessionQuery, SessionResponse?>
+public class GetSessionHandler : IRequestHandler<GetSessionQuery, ErrorOr<SessionResponse>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -22,14 +23,14 @@ public class GetSessionHandler : IRequestHandler<GetSessionQuery, SessionRespons
         _expressionMapper = expressionMapper;
     }
 
-    public async Task<SessionResponse?> Handle(GetSessionQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<SessionResponse>> Handle(GetSessionQuery request, CancellationToken cancellationToken)
     {
         var expression = _expressionMapper.MapExpression<SessionRequest, Session>(request.Expression);
         var session = await _unitOfWork.Sessions.Get(expression);
 
         if (session == null)
         {
-            throw new NotFoundException("Session not found.");
+            return Errors.Session.NotFound;
         }
 
         var response = _mapper.Map<SessionResponse>(session);
