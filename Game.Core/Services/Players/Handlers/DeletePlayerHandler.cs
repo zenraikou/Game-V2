@@ -1,11 +1,12 @@
+using ErrorOr;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Exceptions;
 using Game.Core.Services.Players.Commands;
+using Game.Domain.Common.Errors;
 using MediatR;
 
 namespace Game.Core.Services.Players.Handlers;
 
-public class DeletePlayerHandler : IRequestHandler<DeletePlayerCommand, Unit>
+public class DeletePlayerHandler : IRequestHandler<DeletePlayerCommand, ErrorOr<Deleted>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,18 +15,18 @@ public class DeletePlayerHandler : IRequestHandler<DeletePlayerCommand, Unit>
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Unit> Handle(DeletePlayerCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Deleted>> Handle(DeletePlayerCommand request, CancellationToken cancellationToken)
     {
         var player = await _unitOfWork.Players.Get(p => p.Id == request.Id);
 
         if (player == null)
         {
-            throw new NotFoundException("Player not found.");
+            return Errors.Player.NotFound;
         }
 
         await _unitOfWork.Players.Delete(player);
         await _unitOfWork.Save();
 
-        return await Unit.Task;
+        return await Task.FromResult(Result.Deleted);
     }
 }
