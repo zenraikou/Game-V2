@@ -30,8 +30,8 @@ public class PatchSessionHandler : IRequestHandler<PatchSessionCommand, ErrorOr<
 
         var sessionRequest = _mapper.Map<SessionRequest>(session);
         request.JsonPatchDocument.ApplyTo(sessionRequest);
-        _mapper.Map(sessionRequest, session);
 
+        _mapper.Map(sessionRequest, session);
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();
 

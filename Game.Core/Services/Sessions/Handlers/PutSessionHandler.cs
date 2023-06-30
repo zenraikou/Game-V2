@@ -28,7 +28,6 @@ public class PutSessionHandler : IRequestHandler<PutSessionCommand, ErrorOr<Upda
         }
 
         _mapper.Map(request.Session, session);
-
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();
 

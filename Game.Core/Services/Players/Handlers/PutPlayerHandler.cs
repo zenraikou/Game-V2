@@ -28,7 +28,6 @@ public class PutPlayerHandler : IRequestHandler<PutPlayerCommand, ErrorOr<Update
         }
 
         _mapper.Map(request.Player, player);
-
         await _unitOfWork.Players.Update(player);
         await _unitOfWork.Save();
 

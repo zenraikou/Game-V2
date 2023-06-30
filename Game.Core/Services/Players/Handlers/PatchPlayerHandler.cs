@@ -30,8 +30,8 @@ public class PatchPlayerHandler : IRequestHandler<PatchPlayerCommand, ErrorOr<Up
 
         var playerRequest = _mapper.Map<PlayerRequest>(player);
         request.JsonPatchDocument.ApplyTo(playerRequest);
-        _mapper.Map(playerRequest, player);
 
+        _mapper.Map(playerRequest, player);
         await _unitOfWork.Players.Update(player);
         await _unitOfWork.Save();
 
