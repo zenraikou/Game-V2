@@ -21,7 +21,7 @@ public class ExceptionHandlingMiddleware : IMiddleware
     public async Task ExceptionHandling(HttpContext context, Exception ex)
     {
         HttpStatusCode code;
-        var message = string.Empty;
+        string message;
 
         if (ex.GetType() == typeof(UnimplementedException))
         {

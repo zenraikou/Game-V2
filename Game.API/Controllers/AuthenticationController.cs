@@ -1,14 +1,16 @@
 using Game.API.Attributes;
 using Game.Contracts.Authentication;
-using Game.Core.Services.Authentication.Commands;
-using Game.Core.Services.RefreshToken;
+using Game.Core.Services.Authentications.Commands.Login;
+using Game.Core.Services.Authentications.Commands.Logout;
+using Game.Core.Services.Authentications.Commands.RefreshToken;
+using Game.Core.Services.Authentications.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-[Fingerprinting]
+[Fingerprinting, Authorize]
 [Route("api/auth")]
 public class AuthenticationController : APIController
 {
@@ -19,47 +21,49 @@ public class AuthenticationController : APIController
         _mediator = mediator;
     }
 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("register")]
+    [HttpPost("register"), AllowAnonymous] /* GET: {host}/api/auth/register */
     public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var registerCommand = new RegisterCommand(request);
-        var response = await _mediator.Send(registerCommand);
-
+        var response = await _mediator.Send(new RegisterCommand(request));
         return response.Match(
             response => Ok(response),
             errors => Problem(errors));
     }
 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("login")]
+    [HttpPost("login"), AllowAnonymous] /* GET: {host}/api/auth/login */
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var loginCommand = new LoginCommand(request);
-        var response = await _mediator.Send(loginCommand);
-
+        var response = await _mediator.Send(new LoginCommand(request));
         return response.Match(
             response => Ok(response), 
             errors => Problem(errors));
     }
 
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpPost("logout"), Authorize, Fingerprinting]
+    [HttpPost("logout")] /* GET: {host}/api/auth/logout */
     public async Task<IActionResult> Logout()
     {
-        var logoutCommand = new LogoutCommand();
-        await _mediator.Send(logoutCommand);
-        return Ok();
+        var response = await _mediator.Send(new LogoutCommand());
+        return response.Match(
+            response => Ok(response),
+            errors => Problem(errors));
     }
 
-    [HttpPost("refresh-token"), Fingerprinting]
-    public async Task<ActionResult<AuthenticationResponse>> RefreshToken()
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [HttpPost("refresh-token"), AllowAnonymous] /* GET: {host}/api/auth/refresh-token */
+    public async Task<IActionResult> RefreshToken()
     {
-        var refreshTokenCommand = new RefreshTokenCommand();
-        var response = await _mediator.Send(refreshTokenCommand);
-        return Ok(response);
+        var response = await _mediator.Send(new RefreshTokenCommand());
+        return response.Match(
+            response => Ok(response),
+            errors => Problem(errors));
     }
 }

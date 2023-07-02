@@ -1,7 +1,11 @@
 using Game.API.Attributes;
 using Game.Contracts.Session;
-using Game.Core.Services.Sessions.Commands;
-using Game.Core.Services.Sessions.Queries;
+using Game.Core.Services.Sessions.Commands.Delete;
+using Game.Core.Services.Sessions.Commands.Patch;
+using Game.Core.Services.Sessions.Commands.Post;
+using Game.Core.Services.Sessions.Commands.Put;
+using Game.Core.Services.Sessions.Queries.Get;
+using Game.Core.Services.Sessions.Queries.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -9,18 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-[Authorize(Roles = "Admin")]
-[Fingerprinting]
-[ApiController]
+[Fingerprinting, Authorize(Roles = "Admin")]
 [Route("api/[controller]")]
-public class SessionController : ControllerBase
+public class SessionController : APIController
 {
-    private readonly ILogger<SessionController> _logger;
     private readonly ISender _mediator;
 
-    public SessionController(ILogger<SessionController> logger, ISender mediator)
+    public SessionController(ISender mediator)
     {
-        _logger = logger;
         _mediator = mediator;
     }
 
@@ -30,16 +30,11 @@ public class SessionController : ControllerBase
     [HttpGet("~/api/[controller]s")] /* GET: {host}/api/sessions */
     public async Task<ActionResult<IEnumerable<SessionResponse>>> GetAll()
     {
-        var getAllSessionsQuery = new GetAllSessionsQuery();
-        var response = await _mediator.Send(getAllSessionsQuery);
+        var response = await _mediator.Send(new GetAllSessionsQuery());
 
-        if (!response.Any())
-        {
-            _logger.LogInformation("204 No Content");
+        if (!response.Any()) 
             return NoContent();
-        }
 
-        _logger.LogInformation("200 OK");
         return Ok(response);
     }
 
@@ -47,13 +42,12 @@ public class SessionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("{id}")] /* GET: {host}/api/session/{id} */
-    public async Task<ActionResult<SessionResponse>> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var getSessionQuery = new GetSessionQuery(s => s.Id == id);
-        var response = await _mediator.Send(getSessionQuery);
-
-        _logger.LogInformation("200 OK");
-        return Ok(response);
+        var response = await _mediator.Send(new GetSessionQuery(s => s.Id == id));
+        return response.Match(
+            response => Ok(response), 
+            errors => Problem(errors));
     }
 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -62,10 +56,7 @@ public class SessionController : ControllerBase
     [HttpPost] /* POST: {host}/api/session */
     public async Task<ActionResult<SessionResponse>> Post(SessionRequest request)
     {
-        var postSessionCommand = new PostSessionCommand(request);
-        var response = await _mediator.Send(postSessionCommand);
-        
-        _logger.LogInformation("201 Created");
+        var response = await _mediator.Send(new PostSessionCommand(request));
         return CreatedAtAction(nameof(Get), new { response.Id }, response);
     }
 
@@ -76,10 +67,7 @@ public class SessionController : ControllerBase
     [HttpPut("{id}")] /* PUT: {host}/api/session/{id} */
     public async Task<IActionResult> Put(Guid id, SessionRequest request)
     {
-        var putSessionCommand = new PutSessionCommand(id, request);
-        await _mediator.Send(putSessionCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new PutSessionCommand(id, request));
         return NoContent();
     }
 
@@ -90,10 +78,7 @@ public class SessionController : ControllerBase
     [HttpPatch("{id}")] /* PATCH: {host}/api/session/{id} */
     public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<SessionRequest> jsonPatchDocument)
     {
-        var patchSessionCommand = new PatchSessionCommand(id, jsonPatchDocument);
-        await _mediator.Send(patchSessionCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new PatchSessionCommand(id, jsonPatchDocument));
         return NoContent();
     }
 
@@ -103,10 +88,7 @@ public class SessionController : ControllerBase
     [HttpDelete("{id}")] /* DELETE: {host}/api/session/{id} */
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleteSessionCommand = new DeleteSessionCommand(id);
-        await _mediator.Send(deleteSessionCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new DeleteSessionCommand(id));
         return NoContent();
     }
 }

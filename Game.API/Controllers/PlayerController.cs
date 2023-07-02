@@ -1,7 +1,11 @@
 using Game.API.Attributes;
 using Game.Contracts.Player;
-using Game.Core.Services.Players.Commands;
-using Game.Core.Services.Players.Queries;
+using Game.Core.Services.Players.Commands.Delete;
+using Game.Core.Services.Players.Commands.Patch;
+using Game.Core.Services.Players.Commands.Post;
+using Game.Core.Services.Players.Commands.Put;
+using Game.Core.Services.Players.Queries.Get;
+using Game.Core.Services.Players.Queries.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -9,18 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Game.API.Controllers;
 
-[Authorize(Roles = "Admin")]
-[Fingerprinting]
-[ApiController]
+[Fingerprinting, Authorize(Roles = "Admin")]
 [Route("api/[controller]")]
-public class PlayerController : ControllerBase
+public class PlayerController : APIController
 {
-    private readonly ILogger<PlayerController> _logger;
     private readonly ISender _mediator;
 
-    public PlayerController(ILogger<PlayerController> logger, ISender mediator)
+    public PlayerController(ISender mediator)
     {
-        _logger = logger;
         _mediator = mediator;
     }
 
@@ -30,16 +30,11 @@ public class PlayerController : ControllerBase
     [HttpGet("~/api/[controller]s")] /* GET: {host}/api/players */
     public async Task<ActionResult<IEnumerable<PlayerResponse>>> GetAll()
     {
-        var getAllPlayersQuery = new GetAllPlayersQuery();
-        var response = await _mediator.Send(getAllPlayersQuery);
+        var response = await _mediator.Send(new GetAllPlayersQuery());
 
         if (!response.Any())
-        {
-            _logger.LogInformation("204 No Content");
             return NoContent();
-        }
 
-        _logger.LogInformation("200 OK");
         return Ok(response);
     }
 
@@ -47,13 +42,12 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("{id}")] /* GET: {host}/api/player/{id} */
-    public async Task<ActionResult<PlayerResponse>> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
-        var getPlayerQuery = new GetPlayerQuery(p => p.Id == id);
-        var response = await _mediator.Send(getPlayerQuery);
-
-        _logger.LogInformation("200 OK");
-        return Ok(response);
+        var response = await _mediator.Send(new GetPlayerQuery(p => p.Id == id));
+        return response.Match(
+            response => Ok(response),
+            errors => Problem(errors));
     }
 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -62,10 +56,7 @@ public class PlayerController : ControllerBase
     [HttpPost] /* POST: {host}/api/player */
     public async Task<ActionResult<PlayerResponse>> Post(PlayerRequest request)
     {
-        var postPlayerCommand = new PostPlayerCommand(request);
-        var response = await _mediator.Send(postPlayerCommand);
-
-        _logger.LogInformation("201 Created");
+        var response = await _mediator.Send(new PostPlayerCommand(request));
         return CreatedAtAction(nameof(Get), new { response.Id }, response);
     }
 
@@ -76,10 +67,7 @@ public class PlayerController : ControllerBase
     [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
     public async Task<IActionResult> Put(Guid id, PlayerRequest request)
     {
-        var putPlayerCommand = new PutPlayerCommand(id, request);
-        await _mediator.Send(putPlayerCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new PutPlayerCommand(id, request));
         return NoContent();
     }
 
@@ -90,10 +78,7 @@ public class PlayerController : ControllerBase
     [HttpPatch("{id}")] /* PATCH: {host}/api/player/{id} */
     public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<PlayerRequest> jsonPatchDocument)
     {
-        var patchPlayerCommand = new PatchPlayerCommand(id, jsonPatchDocument);
-        await _mediator.Send(patchPlayerCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new PatchPlayerCommand(id, jsonPatchDocument));
         return NoContent();
     }
 
@@ -103,10 +88,7 @@ public class PlayerController : ControllerBase
     [HttpDelete("{id}")] /* DELETE: {host}/api/player/{id} */
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deletePlayerCommand = new DeletePlayerCommand(id);
-        await _mediator.Send(deletePlayerCommand);
-
-        _logger.LogInformation("204 No Content");
+        await _mediator.Send(new DeletePlayerCommand(id));
         return NoContent();
     }
 }
