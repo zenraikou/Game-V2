@@ -1,7 +1,7 @@
 using ErrorOr;
-using Game.Contracts.Session;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Domain.Common.Errors;
+using Game.Domain.Entities;
+using Mapster;
 using MapsterMapper;
 using MediatR;
 
@@ -20,17 +20,7 @@ public class PatchSessionHandler : IRequestHandler<PatchSessionCommand, ErrorOr<
 
     public async Task<ErrorOr<Updated>> Handle(PatchSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = await _unitOfWork.Sessions.Get(s => s.Id == request.Id);
-
-        if (session == null)
-        {
-            return Errors.Session.NotFound;
-        }
-
-        var sessionRequest = _mapper.Map<SessionRequest>(session);
-        request.JsonPatchDocument.ApplyTo(sessionRequest);
-
-        _mapper.Map(sessionRequest, session);
+        var session = _mapper.Map<Session>(request.Session);
         await _unitOfWork.Sessions.Update(session);
         await _unitOfWork.Save();
 

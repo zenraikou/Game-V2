@@ -2,7 +2,7 @@ namespace Game.Domain.Entities;
 
 public class Player
 {
-    public Guid Id { get; private init; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     public required string Handle { get; set; }
     public required string Name { get; set; }
     public required string UniqueName { get; set; }

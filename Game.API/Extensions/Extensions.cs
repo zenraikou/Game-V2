@@ -28,8 +28,8 @@ public static class Extensions
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("JWTSettings:Secret").Value!)),
                 ClockSkew = TimeSpan.Zero

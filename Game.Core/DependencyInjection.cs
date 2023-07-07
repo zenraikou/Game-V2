@@ -1,3 +1,5 @@
+global using Cypher = BCrypt.Net.BCrypt;
+
 using Game.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

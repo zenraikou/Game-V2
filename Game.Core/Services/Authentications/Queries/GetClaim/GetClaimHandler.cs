@@ -22,7 +22,7 @@ public class GetClaimHandler : IRequestHandler<GetClaimQuery, ErrorOr<string>>
 
         if (string.IsNullOrEmpty(request.JWT))
         {
-            var jwt = await _mediator.Send(new GetJWTQuery());
+            var jwt = await _mediator.Send(new GetJWTQuery(), cancellationToken);
             claim = handler.ReadJwtToken(jwt.Value).Claims.FirstOrDefault(request.Expression)?.Value;
         }
         else

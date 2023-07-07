@@ -6,6 +6,7 @@ using Game.Core.Services.Sessions.Commands.Post;
 using Game.Core.Services.Sessions.Commands.Put;
 using Game.Core.Services.Sessions.Queries.Get;
 using Game.Core.Services.Sessions.Queries.GetAll;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -45,6 +46,7 @@ public class SessionController : APIController
     public async Task<IActionResult> Get(Guid id)
     {
         var response = await _mediator.Send(new GetSessionQuery(s => s.Id == id));
+
         return response.Match(
             response => Ok(response), 
             errors => Problem(errors));
@@ -67,7 +69,11 @@ public class SessionController : APIController
     [HttpPut("{id}")] /* PUT: {host}/api/session/{id} */
     public async Task<IActionResult> Put(Guid id, SessionRequest request)
     {
-        await _mediator.Send(new PutSessionCommand(id, request));
+        var response = await _mediator.Send(new PutSessionCommand(id, request));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 
@@ -78,7 +84,22 @@ public class SessionController : APIController
     [HttpPatch("{id}")] /* PATCH: {host}/api/session/{id} */
     public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<SessionRequest> jsonPatchDocument)
     {
-        await _mediator.Send(new PatchSessionCommand(id, jsonPatchDocument));
+        var result = await _mediator.Send(new GetSessionQuery(s => s.Id == id));
+
+        if (result.IsError)
+            return Problem(result.Errors);
+
+        var request = result.Value.Adapt<SessionRequest>();
+        jsonPatchDocument.ApplyTo(request, ModelState);
+
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var response = await _mediator.Send(new PatchSessionCommand(id, request));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 
@@ -88,7 +109,11 @@ public class SessionController : APIController
     [HttpDelete("{id}")] /* DELETE: {host}/api/session/{id} */
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _mediator.Send(new DeleteSessionCommand(id));
+        var response = await _mediator.Send(new DeleteSessionCommand(id));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 }

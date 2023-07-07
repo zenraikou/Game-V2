@@ -6,6 +6,7 @@ using Game.Core.Services.Players.Commands.Post;
 using Game.Core.Services.Players.Commands.Put;
 using Game.Core.Services.Players.Queries.Get;
 using Game.Core.Services.Players.Queries.GetAll;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -78,7 +79,16 @@ public class PlayerController : APIController
     [HttpPatch("{id}")] /* PATCH: {host}/api/player/{id} */
     public async Task<IActionResult> Patch(Guid id, JsonPatchDocument<PlayerRequest> jsonPatchDocument)
     {
-        await _mediator.Send(new PatchPlayerCommand(id, jsonPatchDocument));
+        var result = await _mediator.Send(new GetPlayerQuery(p => p.Id == id));
+
+        var request = result.Value.Adapt<PlayerRequest>();
+        jsonPatchDocument.ApplyTo(request);
+
+        var response = await _mediator.Send(new PatchPlayerCommand(id, request));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 

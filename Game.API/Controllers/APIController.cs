@@ -13,14 +13,10 @@ public class APIController : ControllerBase
     protected IActionResult Problem(List<Error> errors)
     {
         if (errors.Count is 0)
-        {
             return Problem();
-        }
 
         if (errors.All(error => error.Type == ErrorType.Validation))
-        {
             return ValidationProblem(errors);
-        }
 
         HttpContext.Items[HTTPItem.Errors] = errors;
         return Problem(errors[0]);
@@ -46,11 +42,8 @@ public class APIController : ControllerBase
         var dictionary = new ModelStateDictionary();
 
         foreach (var error in errors)
-        {
             dictionary.AddModelError(error.Code, error.Description);
-        }
 
         return ValidationProblem(dictionary);
     }
-
 }

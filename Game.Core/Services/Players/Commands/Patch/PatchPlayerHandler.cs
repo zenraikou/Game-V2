@@ -1,8 +1,7 @@
 using ErrorOr;
-using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Domain.Common.Errors;
-using MapsterMapper;
+using Game.Domain.Entities;
+using Mapster;
 using MediatR;
 
 namespace Game.Core.Services.Players.Commands.Patch;
@@ -10,27 +9,18 @@ namespace Game.Core.Services.Players.Commands.Patch;
 public class PatchPlayerHandler : IRequestHandler<PatchPlayerCommand, ErrorOr<Updated>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public PatchPlayerHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public PatchPlayerHandler(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
     public async Task<ErrorOr<Updated>> Handle(PatchPlayerCommand request, CancellationToken cancellationToken)
     {
-        var player = await _unitOfWork.Players.Get(p => p.Id == request.Id);
+        var player = request.Player.Adapt<Player>();
 
-        if (player == null)
-        {
-            return Errors.Player.NotFound;
-        }
+        player.Id = request.Id;
 
-        var playerRequest = _mapper.Map<PlayerRequest>(player);
-        request.JsonPatchDocument.ApplyTo(playerRequest);
-
-        _mapper.Map(playerRequest, player);
         await _unitOfWork.Players.Update(player);
         await _unitOfWork.Save();
 

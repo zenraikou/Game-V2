@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Game.Core.Services.Authentications.Commands.GenerateSession;
 
-public record GenerateSessionCommand(string JWT) : IRequest<ErrorOr<SessionResponse>>;
+public record GenerateSessionCommand : IRequest<ErrorOr<SessionResponse>>;

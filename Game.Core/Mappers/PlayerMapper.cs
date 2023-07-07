@@ -2,8 +2,6 @@ using Game.Contracts.Player;
 using Game.Domain.Entities;
 using Mapster;
 
-using Cypher = BCrypt.Net.BCrypt;
-
 namespace Game.Core.Mappings;
 
 public class PlayerMapper : IRegister
@@ -27,7 +25,7 @@ public class PlayerMapper : IRegister
             .Map(dest => dest.Password, src => src.PasswordHash);
     }
 
-    private string PasswordHash(string password)
+    private static string PasswordHash(string password)
     {
         return Cypher.HashPassword(password);
     }

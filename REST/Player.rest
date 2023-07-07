@@ -84,7 +84,7 @@ Fingerprint: {{fingerprint}}
     {
         "op": "replace",
         "path": "/role",
-        "value": "Player"
+        "value": "Admin"
     }
 ]
 

@@ -26,17 +26,16 @@ public class GenerateSessionHandler : IRequestHandler<GenerateSessionCommand, Er
 
     public async Task<ErrorOr<SessionResponse>> Handle(GenerateSessionCommand request, CancellationToken cancellationToken)
     {
-        var fingerprint = await _mediator.Send(new GetFingerprintQuery());
-        var jti = await _mediator.Send(new GetClaimQuery(c => c.Type == JWTClaims.JTI, request.JWT));
+        var fingerprint = await _mediator.Send(new GetFingerprintQuery(), cancellationToken);
 
-        if (fingerprint.IsError || jti.IsError)
+        if (fingerprint.IsError)
         {
             return Errors.Authorization.Unauthorized;
         }
 
         var response = new SessionResponse
         {
-            Id = Guid.Parse(jti.Value),
+            Id = Guid.NewGuid(),
             Fingerprint = fingerprint.Value,
             Expiry = _time.Now.AddDays(_jwtSettings.Expiry)
         };

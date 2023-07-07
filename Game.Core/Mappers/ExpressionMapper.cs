@@ -31,7 +31,7 @@ public class ReplaceVisitor<TDestination> : ExpressionVisitor
     {
         if (node.Expression == _sourceParameter)
         {
-            var memberInfo = GetDestinationMember(node.Member.Name);
+            var memberInfo = ReplaceVisitor<TDestination>.GetDestinationMember(node.Member.Name);
             var memberExpression = Expression.MakeMemberAccess(_destinationParameter, memberInfo);
             return memberExpression;
         }
@@ -39,7 +39,7 @@ public class ReplaceVisitor<TDestination> : ExpressionVisitor
         return base.VisitMember(node);
     }
 
-    private MemberInfo GetDestinationMember(string memberName)
+    private static MemberInfo GetDestinationMember(string memberName)
     {
         var destinationType = typeof(TDestination);
         var memberInfo = destinationType.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
