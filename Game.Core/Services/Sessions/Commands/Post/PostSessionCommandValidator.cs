@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Game.Core.Services.Sessions.Commands.Post;
 
-namespace Game.Core;
+namespace Game.Core.Services.Sessions.Commands.Post;
 
 public class PostSessionCommandValidator : AbstractValidator<PostSessionCommand>
 {

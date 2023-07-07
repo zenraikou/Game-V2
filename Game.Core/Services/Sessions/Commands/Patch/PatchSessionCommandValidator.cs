@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Game.Core.Services.Sessions.Commands.Patch;
 
-namespace Game.Core;
+namespace Game.Core.Services.Sessions.Commands.Patch;
 
 public class PatchSessionCommandValidator : AbstractValidator<PatchSessionCommand>
 {

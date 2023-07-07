@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Game.Core.Services.Sessions.Commands.Delete;
 
-namespace Game.Core;
+namespace Game.Core.Services.Sessions.Commands.Delete;
 
 public class DeleteSessionCommandValidator : AbstractValidator<DeleteSessionCommand>
 {

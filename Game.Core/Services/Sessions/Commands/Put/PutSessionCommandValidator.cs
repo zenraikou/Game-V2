@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Game.Core.Services.Sessions.Commands.Put;
 
-namespace Game.Core;
+namespace Game.Core.Services.Sessions.Commands.Put;
 
 public class PutSessionCommandValidator : AbstractValidator<PutSessionCommand>
 {
