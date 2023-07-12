@@ -1,4 +1,5 @@
 using Game.Domain.Entities;
+using Game.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Game.Infrastructure.Database;

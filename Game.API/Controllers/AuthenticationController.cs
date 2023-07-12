@@ -28,6 +28,7 @@ public class AuthenticationController : APIController
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         var response = await _mediator.Send(new RegisterCommand(request));
+
         return response.Match(
             response => Ok(response),
             errors => Problem(errors));
@@ -40,6 +41,7 @@ public class AuthenticationController : APIController
     public async Task<IActionResult> Login(LoginRequest request)
     {
         var response = await _mediator.Send(new LoginCommand(request));
+
         return response.Match(
             response => Ok(response), 
             errors => Problem(errors));
@@ -52,6 +54,7 @@ public class AuthenticationController : APIController
     public async Task<IActionResult> Logout()
     {
         var response = await _mediator.Send(new LogoutCommand());
+
         return response.Match(
             response => Ok(response),
             errors => Problem(errors));
@@ -62,6 +65,7 @@ public class AuthenticationController : APIController
     public async Task<IActionResult> RefreshToken()
     {
         var response = await _mediator.Send(new RefreshTokenCommand());
+
         return response.Match(
             response => Ok(response),
             errors => Problem(errors));

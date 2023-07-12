@@ -36,10 +36,14 @@ public class RegisterHandler : IRequestHandler<RegisterCommand, ErrorOr<Authenti
         var playerRequest = _mapper.Map<PlayerRequest>(request.Register);
         playerResponse = await _mediator.Send(new PostPlayerCommand(playerRequest), cancellationToken);
 
-
         var sessionResponse = await _mediator.Send(new GenerateSessionCommand(), cancellationToken);
-        var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse);
 
+        if (sessionResponse.IsError)
+        {
+            return Errors.Authorization.Unauthorized;
+        }
+
+        var sessionRequest = _mapper.Map<SessionRequest>(sessionResponse.Value);
         await _mediator.Send(new PostSessionCommand(sessionRequest), cancellationToken);
 
         var jwt = await _mediator.Send(new GenerateJWTCommand(playerResponse.Value.Id.ToString(), playerResponse.Value.Role, sessionRequest.Id.ToString()), cancellationToken);

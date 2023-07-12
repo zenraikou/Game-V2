@@ -1,3 +1,5 @@
+global using Cypher = BCrypt.Net.BCrypt;
+
 using Game.Core.Common.Interfaces.Persistence;
 using Game.Infrastructure.Database;
 using Game.Infrastructure.Persistence;

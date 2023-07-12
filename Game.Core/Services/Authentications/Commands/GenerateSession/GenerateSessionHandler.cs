@@ -1,9 +1,7 @@
 using ErrorOr;
 using Game.Contracts.Session;
-using Game.Core.Common.Constants;
 using Game.Core.Common.Interfaces.Time;
 using Game.Core.Common.Settings;
-using Game.Core.Services.Authentications.Queries.GetClaim;
 using Game.Core.Services.Authentications.Queries.GetFingerprint;
 using Game.Domain.Common.Errors;
 using MediatR;

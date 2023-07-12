@@ -46,6 +46,7 @@ public class PlayerController : APIController
     public async Task<IActionResult> Get(Guid id)
     {
         var response = await _mediator.Send(new GetPlayerQuery(p => p.Id == id));
+
         return response.Match(
             response => Ok(response),
             errors => Problem(errors));
@@ -68,7 +69,11 @@ public class PlayerController : APIController
     [HttpPut("{id}")] /* PUT: {host}/api/player/{id} */
     public async Task<IActionResult> Put(Guid id, PlayerRequest request)
     {
-        await _mediator.Send(new PutPlayerCommand(id, request));
+        var response = await _mediator.Send(new PutPlayerCommand(id, request));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 
@@ -81,8 +86,14 @@ public class PlayerController : APIController
     {
         var result = await _mediator.Send(new GetPlayerQuery(p => p.Id == id));
 
+        if (result.IsError)
+            return Problem(result.Errors);
+
         var request = result.Value.Adapt<PlayerRequest>();
-        jsonPatchDocument.ApplyTo(request);
+        jsonPatchDocument.ApplyTo(request, ModelState);
+
+        if (!ModelState.IsValid)
+            return BadRequest();
 
         var response = await _mediator.Send(new PatchPlayerCommand(id, request));
 
@@ -98,7 +109,11 @@ public class PlayerController : APIController
     [HttpDelete("{id}")] /* DELETE: {host}/api/player/{id} */
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _mediator.Send(new DeletePlayerCommand(id));
+        var response = await _mediator.Send(new DeletePlayerCommand(id));
+
+        if (response.IsError)
+            return Problem(response.Errors);
+
         return NoContent();
     }
 }

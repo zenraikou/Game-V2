@@ -49,10 +49,10 @@ namespace Game.Infrastructure.Migrations
                 columns: new[] { "Id", "CreationStamp", "Email", "Handle", "Name", "PasswordHash", "Role", "UniqueName" },
                 values: new object[,]
                 {
-                    { new Guid("0d92871d-04d8-4415-84e7-0225ada944a3"), new DateTime(2023, 6, 21, 4, 53, 5, 323, DateTimeKind.Utc).AddTicks(9105), "megumin@konosuba.gg", "megumin", "Megumin", "$2a$11$pVUi8bKl9qWBypS.44AqcuD321So2wbrd7ZtCJBYypzPUpDGrIdiW", 1, "megumin" },
-                    { new Guid("a3789e2f-0747-408b-9720-a32eced2e7e1"), new DateTime(2023, 6, 21, 4, 53, 7, 31, DateTimeKind.Utc).AddTicks(5104), "darkness@konosuba.gg", "darkness", "Darkness", "$2a$11$1O.Hri2fto9kz6NwHCf8NuJPWRyl4jluu9ChWgw8Sz1/3RJLBsgcC", 1, "darkness" },
-                    { new Guid("a7e4cd59-50f6-4db1-b0cd-98b95db819fb"), new DateTime(2023, 6, 21, 4, 53, 4, 401, DateTimeKind.Utc).AddTicks(1037), "aqua@konosuba.gg", "aqua", "Aqua", "$2a$11$EU01sSJdc4.EDeaC7bU4xeONlQgAHUQ1vvfL8AVvJKJyOGMzFC2CW", 1, "aqua" },
-                    { new Guid("e1f0c96b-98fb-4401-b760-ab7a5ef43ff2"), new DateTime(2023, 6, 21, 4, 53, 3, 56, DateTimeKind.Utc).AddTicks(4477), "kazuma@konosuba.gg", "kazuma", "Kazuma", "$2a$11$CWse9HsKXAy.BEHtTsSk7eWFzyZc7.haKtBp96F/zvrG01Lddqbsu", 1, "kazuma" }
+                    { new Guid("ffffffff-ffff-ffff-ffff-fffffffffff1"), new DateTime(2023, 7, 12, 13, 9, 6, 835, DateTimeKind.Utc).AddTicks(7918), "kazuma@konosuba.gg", "kazuma", "Kazuma", "$2a$11$W8ypLTkrD/s0JCNNKJQQnOEJSlUf2kKJrt9ggO.biTqEm3lWevkP.", 1, "kazuma" },
+                    { new Guid("ffffffff-ffff-ffff-ffff-fffffffffff2"), new DateTime(2023, 7, 12, 13, 9, 7, 407, DateTimeKind.Utc).AddTicks(6922), "aqua@konosuba.gg", "aqua", "Aqua", "$2a$11$bvSe6PD9kiWVI7HxrwlccOh0/.bu7DYxyDvK9.0L3Rc1USgXMK3WS", 1, "aqua" },
+                    { new Guid("ffffffff-ffff-ffff-ffff-fffffffffff3"), new DateTime(2023, 7, 12, 13, 9, 7, 963, DateTimeKind.Utc).AddTicks(6599), "megumin@konosuba.gg", "megumin", "Megumin", "$2a$11$nEV7DxtYOYoNCx8P02IIH.3CsqsmVBsb5cwVZUqmTRUV882uhk4se", 1, "megumin" },
+                    { new Guid("ffffffff-ffff-ffff-ffff-fffffffffff4"), new DateTime(2023, 7, 12, 13, 9, 8, 517, DateTimeKind.Utc).AddTicks(9744), "darkness@konosuba.gg", "darkness", "Darkness", "$2a$11$TL5Sq0pKrxO6bWnLN4CpJ.oU9XNi./xwyt3fCdxsU18zzmRGO5.TO", 1, "darkness" }
                 });
         }
 

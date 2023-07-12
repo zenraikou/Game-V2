@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Game.Infrastructure.Migrations
 {
     [DbContext(typeof(GameDBContext))]
-    [Migration("20230621045308_Initialize")]
+    [Migration("20230712130909_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -64,45 +64,45 @@ namespace Game.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e1f0c96b-98fb-4401-b760-ab7a5ef43ff2"),
-                            CreationStamp = new DateTime(2023, 6, 21, 4, 53, 3, 56, DateTimeKind.Utc).AddTicks(4477),
+                            Id = new Guid("ffffffff-ffff-ffff-ffff-fffffffffff1"),
+                            CreationStamp = new DateTime(2023, 7, 12, 13, 9, 6, 835, DateTimeKind.Utc).AddTicks(7918),
                             Email = "kazuma@konosuba.gg",
                             Handle = "kazuma",
                             Name = "Kazuma",
-                            PasswordHash = "$2a$11$CWse9HsKXAy.BEHtTsSk7eWFzyZc7.haKtBp96F/zvrG01Lddqbsu",
+                            PasswordHash = "$2a$11$W8ypLTkrD/s0JCNNKJQQnOEJSlUf2kKJrt9ggO.biTqEm3lWevkP.",
                             Role = 1,
                             UniqueName = "kazuma"
                         },
                         new
                         {
-                            Id = new Guid("a7e4cd59-50f6-4db1-b0cd-98b95db819fb"),
-                            CreationStamp = new DateTime(2023, 6, 21, 4, 53, 4, 401, DateTimeKind.Utc).AddTicks(1037),
+                            Id = new Guid("ffffffff-ffff-ffff-ffff-fffffffffff2"),
+                            CreationStamp = new DateTime(2023, 7, 12, 13, 9, 7, 407, DateTimeKind.Utc).AddTicks(6922),
                             Email = "aqua@konosuba.gg",
                             Handle = "aqua",
                             Name = "Aqua",
-                            PasswordHash = "$2a$11$EU01sSJdc4.EDeaC7bU4xeONlQgAHUQ1vvfL8AVvJKJyOGMzFC2CW",
+                            PasswordHash = "$2a$11$bvSe6PD9kiWVI7HxrwlccOh0/.bu7DYxyDvK9.0L3Rc1USgXMK3WS",
                             Role = 1,
                             UniqueName = "aqua"
                         },
                         new
                         {
-                            Id = new Guid("0d92871d-04d8-4415-84e7-0225ada944a3"),
-                            CreationStamp = new DateTime(2023, 6, 21, 4, 53, 5, 323, DateTimeKind.Utc).AddTicks(9105),
+                            Id = new Guid("ffffffff-ffff-ffff-ffff-fffffffffff3"),
+                            CreationStamp = new DateTime(2023, 7, 12, 13, 9, 7, 963, DateTimeKind.Utc).AddTicks(6599),
                             Email = "megumin@konosuba.gg",
                             Handle = "megumin",
                             Name = "Megumin",
-                            PasswordHash = "$2a$11$pVUi8bKl9qWBypS.44AqcuD321So2wbrd7ZtCJBYypzPUpDGrIdiW",
+                            PasswordHash = "$2a$11$nEV7DxtYOYoNCx8P02IIH.3CsqsmVBsb5cwVZUqmTRUV882uhk4se",
                             Role = 1,
                             UniqueName = "megumin"
                         },
                         new
                         {
-                            Id = new Guid("a3789e2f-0747-408b-9720-a32eced2e7e1"),
-                            CreationStamp = new DateTime(2023, 6, 21, 4, 53, 7, 31, DateTimeKind.Utc).AddTicks(5104),
+                            Id = new Guid("ffffffff-ffff-ffff-ffff-fffffffffff4"),
+                            CreationStamp = new DateTime(2023, 7, 12, 13, 9, 8, 517, DateTimeKind.Utc).AddTicks(9744),
                             Email = "darkness@konosuba.gg",
                             Handle = "darkness",
                             Name = "Darkness",
-                            PasswordHash = "$2a$11$1O.Hri2fto9kz6NwHCf8NuJPWRyl4jluu9ChWgw8Sz1/3RJLBsgcC",
+                            PasswordHash = "$2a$11$TL5Sq0pKrxO6bWnLN4CpJ.oU9XNi./xwyt3fCdxsU18zzmRGO5.TO",
                             Role = 1,
                             UniqueName = "darkness"
                         });

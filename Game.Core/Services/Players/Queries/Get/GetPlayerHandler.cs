@@ -2,7 +2,6 @@ using ErrorOr;
 using Game.Contracts.Player;
 using Game.Core.Common.Interfaces.Mappers;
 using Game.Core.Common.Interfaces.Persistence;
-using Game.Core.Services.Players.Queries;
 using Game.Domain.Common.Errors;
 using Game.Domain.Entities;
 using MapsterMapper;
